@@ -11,7 +11,7 @@
     "ts:node": "ts-node src/api/index.ts",
     "start": "node dist/api/",
     "lint": "eslint ./src",
-    "pm2-start": "NODE_ENV=staging pm2 start dist/api -b --watch -i max"
+    "pm2-start": "NODE_ENV=staging pm2 start dist/api --watch"
   },
   "author": "dexterx25",
   "license": "MIT",
@@ -22,6 +22,7 @@
     "body-parser": "1.19.0",
     "cors": "2.8.5",
     "cross-fetch": "^3.1.4",
+    "dayjs": "^1.10.7",
     "dotenv": "10.0.0",
     "epayco-node": "0.0.7",
     "epayco-sdk-node": "1.0.7",
@@ -40,17 +41,16 @@
     "npm": "7.24.0",
     "path": "0.12.7",
     "pg": "8.7.1",
+    "pm2": "^5.1.2",
     "prettier": "2.1.2",
     "redis": "3.1.2",
     "request": "2.88.2",
     "serialport": "9.0.4",
     "socket.io": "3.1.2",
     "stripe": "8.176.0",
-    "swagger-jsdoc": "^6.1.0",
-    "swagger-ui-express": "^4.1.6",
     "ts-node": "^10.2.1",
     "tsc": "2.0.3",
-    "typescript": "4.3.5"
+    "typescript": "^4.3.5"
   },
   "devDependencies": {
     "@types/body-parser": "1.19.1",

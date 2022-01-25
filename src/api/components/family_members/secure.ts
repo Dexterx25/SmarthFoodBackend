@@ -9,6 +9,10 @@ export default function cheakAuth(action: any) {
         await auth.cheak.logged(req, res);
         next();
         break;
+      case 'create': 
+      await auth.cheak.logged(req, res);
+      next();
+      break;
       case 'get':
         console.log('for getttt', req.headers);
         await auth.cheak.logged(req, res);

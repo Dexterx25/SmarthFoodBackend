@@ -43,14 +43,15 @@ function get(id, table) {
     return list(table + '_' + id);
 }
 exports.get = get;
-function upsert(data, table) {
+function upsert(data, table, timeout) {
     return __awaiter(this, void 0, void 0, function* () {
         let key = table;
         if (data && data.id) {
             key = key + '_' + data.id;
         }
         console.log('dataaaaaa cache upsert-->', data);
-        client.setex(key, 10, JSON.stringify(data));
+        const theTime = timeout ? timeout : 10;
+        client.setex(key, theTime, JSON.stringify(data));
         return true;
     });
 }

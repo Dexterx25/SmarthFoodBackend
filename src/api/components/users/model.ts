@@ -1,6 +1,7 @@
 export default class userModel {
   public names: string;
   public surnames: string;
+  public gender_id: string;
   public full_name: string;
   public prefix_number: string;
   public phone_number: number;
@@ -8,14 +9,17 @@ export default class userModel {
   public type_user_id: string;
   public avatar?: string;
   public height?: number;
-  public date_birtday?:any;
+  public date_birtday!:any;
   public weight?: number;
+  public count_login?: string;
 
   constructor(datas: any) {
     (this.names = datas.names),
+     this.gender_id = datas.gender == 'Male' ? "1" : datas.gender == 'Female' ? "2" : '',
     (this.weight = datas.weight),
     this.height = datas.height,
-    (this.date_birtday = new Date(datas.date_birtday)),
+    this.count_login = !datas.count_login ?  "1" : datas.count_login,
+    (this.date_birtday = datas.date_birtday),
       (this.surnames = datas.surnames),
       (this.full_name = `${datas.names} ${
         datas.surnames ? datas.surnames : ''

@@ -8,7 +8,7 @@ export const config: any = {
   },
   api: {
     host: process.env.API_HOST || 'localhost',
-    port: process.env.API_PORT || 3000
+    port: process.env.API_PORT || 4007
   },
   jwt: {
     secret: process.env.SECRET || 'SECRETTOKEN'

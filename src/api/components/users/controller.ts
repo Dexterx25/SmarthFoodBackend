@@ -22,12 +22,14 @@ export default function (injectedStore: any, injectedCache: any) {
 
   async function insert({ datas, type }: any) {
     return new Promise(async (resolve, reject) => {
+      console.log('this is the datas insertttt-->', datas)
       const responValidator = await Validator(datas);
       if (responValidator) {
         reject({ msg: responValidator });
         return false;
       }
       const data = new userModel(datas);
+      console.log('this is the dataMODALL USER MODEL-->', data)
       try {
         const registerRespon: any = await store.upsert(table, { data, type });
 
@@ -43,9 +45,10 @@ export default function (injectedStore: any, injectedCache: any) {
         const { id, ...rest } = registerRespon;
         //Si quiero que logue automaticamente, descomento esto de acá abajo
          const { email } = Object.assign(registerRespon, responAuth);
-         const res = await controllerAuth.insert(email, datas.password, table);
-        console.log('RES CONTROLLER AUTH REGISTER---', registerRespon);
-        resolve({ id });
+         console.log('lets go to login--->', email)
+         const { token }: any = await controllerAuth.insert(email, datas.password, table);
+        console.log('this is the REGISTER--->', registerRespon)
+        resolve(Object.assign(registerRespon, {token}));
       } catch (e) {
         await midlleHandleError(e, table, datas, resolve, reject);
       }
@@ -93,11 +96,12 @@ export default function (injectedStore: any, injectedCache: any) {
 
   async function update({ datas, id, type }: any) {
     return new Promise(async (resolve, reject) => {
-      const responValidator = await Validator(datas);
-      if (responValidator) {
-        reject({ msg: responValidator });
-        return false;
-      }
+      // const responValidator = await Validator(datas);
+      // if (responValidator) {
+        
+      //   reject({ msg: responValidator });
+      //   return false;
+      // }
       const data = Object.assign(new userModel(datas), { id });
 
       try {

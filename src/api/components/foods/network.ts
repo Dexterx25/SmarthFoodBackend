@@ -72,8 +72,9 @@ async function get(req: Request, res: Response, next: NextFunction) {
 }
 
 async function list(req: Request, res: Response, next: NextFunction) {
-  await controller
-    .list()
+  console.log('this is the list Foods--->', req.query)
+  const query:any = req.query?.filter
+  await controller.list(query)
     .then((respon) => {
       ServerResponse.success(req, res, respon, 200);
     })

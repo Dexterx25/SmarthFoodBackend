@@ -30,14 +30,14 @@ function get(id?: any, table?: string) {
   return list(table + '_' + id);
 }
 
-async function upsert(data: any, table: string) {
+async function upsert(data: any, table: string, timeout?: string) {
   let key = table;
   if (data && data.id) {
     key = key + '_' + data.id;
   }
   console.log('dataaaaaa cache upsert-->', data);
-
-  client.setex(key, 10, JSON.stringify(data));
+  const theTime = timeout ? timeout : 10
+  client.setex(key, theTime, JSON.stringify(data));
   return true;
 }
 

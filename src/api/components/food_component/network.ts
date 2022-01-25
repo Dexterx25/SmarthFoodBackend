@@ -10,7 +10,6 @@ const router: Router = Router();
 
 import multer from 'multer';
 import mimeTypes from 'mime-types';
-import { FoodModel } from './model';
 
 const storage = multer.diskStorage({
   destination: 'public/photos',

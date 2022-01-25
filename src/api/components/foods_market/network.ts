@@ -34,12 +34,13 @@ async function upsert(req: Request, res: Response, next: NextFunction) {
   console.log('This IS The File:', req.files);
 
   const datas: Record<string, unknown> = {
-    type: 'food_register',
+    type: 'food_market_register',
     datas: req.body,
+    token: req.headers.authorization,
     files: req.files
   };
   console.log('UPSERTTTTT');
-  console.log('body--->', datas);
+  console.log('body foodMarket--->', datas);
   await controller
     .insert(datas)
     .then((respon: any) => {
@@ -71,6 +72,7 @@ async function get(req: Request, res: Response, next: NextFunction) {
 }
 
 async function list(req: Request, res: Response, next: NextFunction) {
+  console.log('VAMOS A LISTAR')
   await controller
     .list()
     .then((respon) => {

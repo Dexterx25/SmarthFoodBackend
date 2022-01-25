@@ -8,6 +8,7 @@ import {
 import * as auth from '../../../authorizations/index';
 import {FoodModel} from './model';
 import errors from '../../../utils/responses/errors';
+import { CateoryFoodEnum } from './model';
 export default function (injectedStore: any, injectedCache: any) {
   let cache = injectedCache;
   let store = injectedStore;
@@ -39,17 +40,23 @@ export default function (injectedStore: any, injectedCache: any) {
   }
 
 
-  async function list() {
+  async function list(query?: string) {
     return new Promise(async (resolve, reject) => {
       console.log('LIST CONTROLLER');
       try {
         let foods = await cache.list(table);
         if (!foods) {
-          foods = await store.list(table);
+          if(query?.length){
+            const categoration = query == 'dinner' ? CateoryFoodEnum[query] : query == 'lunch' ? CateoryFoodEnum[query] : query == 'breakfast' && CateoryFoodEnum[query] 
+            foods = await store.query(table, {category_id: categoration}, new Array('category_foods'));
+          }else{
+            foods = await store.list(table);
+          }
+
           !foods && reject({ msg: 'No hay platos de comida' });
-          cache.upsert(foods, table);
+          cache.upsert(foods, table, '1');
         } else {
-          console.log('datos traidos de la cache');
+          console.log('datos traidos de la cache ddddd');
         }
         resolve(foods);
       } catch (error) {

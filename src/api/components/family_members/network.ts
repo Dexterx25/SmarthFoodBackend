@@ -10,7 +10,6 @@ const router: Router = Router();
 
 import multer from 'multer';
 import mimeTypes from 'mime-types';
-import { FoodModel } from './model';
 
 const storage = multer.diskStorage({
   destination: 'public/photos',
@@ -23,7 +22,8 @@ const upload = multer({
   storage: storage
 });
 
-router.post('/', upload.single('file'), upsert);
+router.post('/create', secure('create'), upload.single('file'), upsert);
+router.post('/create/list', secure('create'), upload.single('file'), upsertList);
 router.get('/:id', get);
 router.get('/', secure('list'), list);
 router.put('/:id', secure('update'), update);
@@ -40,9 +40,31 @@ async function upsert(req: Request, res: Response, next: NextFunction) {
     files: req.files
   };
   console.log('UPSERTTTTT');
-  console.log('body--->', datas);
+  console.log('body member--->', datas);
   await controller
     .insert(datas)
+    .then((respon: any) => {
+      ConsoleResponse.success(procedence, respon);
+      ServerResponse.success(req, res, respon, 201);
+    })
+    .catch((err) => {
+      ServerResponse.error(req, res, err);
+    });
+}
+
+async function upsertList(req: Request, res: Response, next: NextFunction) {
+  console.log('This IS The File:', req.files);
+
+  const datas: Record<string, unknown> = {
+    type: 'family_member_register',
+    datas: req.body,
+    files: req.files,
+    token: req.headers.authorization
+  };
+  console.log('UPSERTTTTT');
+  console.log('body member--->', datas);
+  await controller
+    .insertList(datas)
     .then((respon: any) => {
       ConsoleResponse.success(procedence, respon);
       ServerResponse.success(req, res, respon, 201);
@@ -72,8 +94,12 @@ async function get(req: Request, res: Response, next: NextFunction) {
 }
 
 async function list(req: Request, res: Response, next: NextFunction) {
+  console.log('VAMOS A HACER FAMILY LIST MEMBERS')
+  const query = {
+    token: req.headers.authorization    
+  }
   await controller
-    .list()
+    .list(query)
     .then((respon) => {
       ServerResponse.success(req, res, respon, 200);
     })

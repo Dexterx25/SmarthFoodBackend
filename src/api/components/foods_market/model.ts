@@ -1,23 +1,24 @@
-export class FoodMarket {
- public name!: string;
- public user_id!: string;
- public total_amount!: string;
- public picture!: string;
- public total_kalories!: string;
- public markets!: string;
- public days_market!: string;
- public date_time_init!: string;
- public date_time_finish!: string;
+
+interface FoodModelCreated{
+  food_id:string;
+}
+interface FamilyMemberModelCreated{
+  family_member_id:string;
+}
+export class Markets {
+  public foodsListId: [FoodModelCreated]
+  public user_id: string;
+  public listFamily_member_id: [FamilyMemberModelCreated];
+  public days_market: string;
+  public date_init?: string;
+  public date_finish?: string;
   constructor(datas: any) {
-   this.name = datas.name;
+   this.foodsListId = datas.foodsListId;
    this.user_id = datas.user_id;
-   this.total_amount = datas.total_amount;
-   this.picture = datas.picture;
-   this.total_kalories = datas.total_kalories;
-   this.markets = datas.markets;
+   this.listFamily_member_id = datas.listFamily_member_id;
    this.days_market = datas.days_market;
-   this.date_time_init = datas.date_time_init;
-   this.date_time_finish = datas.date_time_finish;
+   this.date_init = datas.date_init;
+   this.date_finish = datas.date_finish;
     return { ...this };
   }
 }

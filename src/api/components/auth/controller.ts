@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import * as auth from '../../../authorizations/index';
 import chalk from 'chalk';
 import controllerAuth from './index';
+import controllerUser from '../users/index'
 import { config } from '../../../configurations';
 export default function (injectedStore: any) {
   let store = injectedStore;
@@ -15,12 +16,14 @@ export default function (injectedStore: any) {
   let procedence = '[CONTROLLER AUTH]';
 
   const insert = (email: string, password: string, type?: any) => {
+    console.log('this is the email auth--->', email);
     return new Promise(async (resolve, reject) => {
-      const data: any = await store.query(
+      const data: any = await (await store.query(
         table2,
         { email: email },
         new Array(type)
-      );
+      ))[0]
+      console.log('this is the data auth-->', data)
       if (!data) {
         reject({
           msg: 'correo no valido o usuario inexistente',
@@ -47,10 +50,14 @@ export default function (injectedStore: any) {
           _id,
           ...newObject
         } = config.usingDb.mongoDB ? dataAuth._doc : dataAuth;
-
-        resolve(Object.assign({ id: user_id }, newObject));
+        const getUser: any = await controllerUser.get({filter:{id: user_id}})
+      //console.log('this is the getUser--->', getUser)
+       // const typeUpdate = 'user_update'
+        //const userUpdated: any = await controllerUser.update({datas: Object.assign(getUser, {count_login: +getUser?.count_login + 1}), id: user_id, type: typeUpdate })
+        //console.log('this is the userUpdated-->', userUpdated)
+        resolve(Object.assign({ id: user_id, email: getUser.email, full_name:getUser.full_name }, newObject));
       } else {
-        reject({ msg: 'Invalid Password', statusCode: 400 });
+        return  reject({ msg: 'Invalid Password login', statusCode: 400 });
       }
     });
   };

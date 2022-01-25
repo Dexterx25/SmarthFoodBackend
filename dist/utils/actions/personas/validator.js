@@ -14,9 +14,15 @@ exports.Validator = void 0;
 function Validator(data) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log('THIS IS DATA VALIDATOR--->', data);
-        const { names, surnames, prefix_number, phone_number, password, password_verification } = data;
+        const { names, surnames, prefix_number, phone_number, password, password_verification, gender, date_birtday } = data;
         let full_name = `${names} ${surnames}`;
-        console.log('ESTA ES LA CONTRASEÑA1111--->', password);
+        console.log('ESTA ES LA CONTRASEÑA1111xdddd--->', password);
+        if (!gender) {
+            return 'Es necesario suministrar un genero para calcular las mejores recetas';
+        }
+        if (!date_birtday) {
+            return 'Es necesario suministrar un genero para calcular las mejores recetas';
+        }
         if (data.email) {
             const emailRegex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
             if (data.email.length > 300)

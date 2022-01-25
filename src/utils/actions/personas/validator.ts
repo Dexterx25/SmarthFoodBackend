@@ -7,10 +7,19 @@ export async function Validator(data: any) {
     prefix_number,
     phone_number,
     password,
-    password_verification
+    password_verification,
+    gender,
+    date_birtday
   } = data;
+  
   let full_name = `${names} ${surnames}`;
-  console.log('ESTA ES LA CONTRASEÑA1111--->', password);
+  console.log('ESTA ES LA CONTRASEÑA1111xdddd--->', password);
+  if(!gender){
+    return 'Es necesario suministrar un genero para calcular las mejores recetas'
+  }
+  if(!date_birtday){
+    return 'Es necesario suministrar un genero para calcular las mejores recetas'
+  }
   if (data.email) {
     const emailRegex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
     if (data.email.length > 300)

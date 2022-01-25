@@ -36,6 +36,7 @@ function upsert(req, res, next) {
         const datas = {
             type: 'send_message',
             datas: req.body,
+            token: req.headers.authorization,
             files: req.files
         };
         console.log('UPSERTTTTT message', datas);

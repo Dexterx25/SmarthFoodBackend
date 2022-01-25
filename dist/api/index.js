@@ -13,8 +13,10 @@ const chalk_1 = __importDefault(require("chalk"));
 //Swagger --->
 //const SwaggerUI = require('swagger-ui-express');
 //const SwaggerJsDoc = require('swagger-jsdoc');
-const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
-const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
+//const swaggerDoc = require('../../src/swagger.json');
+//import swaggerDoc from '../../src/swagger.json';
+//import SwaggerUI from 'swagger-ui-express';
+//import SwaggerJsDoc from 'swagger-jsdoc';
 const app = (0, express_1.default)();
 const path_1 = __importDefault(require("path"));
 require('dotenv').config({ path: path_1.default.resolve(__dirname, '../../.env') });
@@ -25,10 +27,18 @@ app.use(body_parser_1.default.urlencoded({ extended: false }));
 const network_1 = __importDefault(require("./components/users/network"));
 const network_2 = __importDefault(require("./components/admin/network"));
 const network_3 = __importDefault(require("./components/auth/network"));
-app.use('/api-doc', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup((0, swagger_jsdoc_1.default)()));
+const network_4 = __importDefault(require("./components/foods/network"));
+const network_5 = __importDefault(require("./components/polls/network"));
+const network_6 = __importDefault(require("./components/foods_market/network"));
+const network_7 = __importDefault(require("./components/family_members/network"));
+//app.use('/api-doc', SwaggerUI.serve, SwaggerUI.setup(swaggerDoc));
 app.use('/users', network_1.default);
+app.use('/foods', network_4.default);
 app.use('/admins', network_2.default);
 app.use('/authorization', network_3.default);
+app.use('/polls', network_5.default);
+app.use('/markets', network_6.default);
+app.use('/members', network_7.default);
 app.use(errors_1.default);
 app.listen(config.api.port, () => {
     // eslint-disable-next-line prettier/prettier

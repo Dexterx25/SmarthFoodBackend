@@ -5,4 +5,6 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+--   "exec": "concurrently \"ts-node ./src/api/index.ts\"  \"ts-node ./src/MSV_mqtt/mqtt.ts\"  \" ts-node ./src/msv_chats/chats.ts \" "
+  
 

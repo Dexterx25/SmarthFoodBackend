@@ -1,1 +1,1 @@
-{"version":3,"file":"model.js","sourceRoot":"","sources":["../../../../src/MSV_mqtt/components/publisher/model.ts"],"names":[],"mappings":""}
+{"version":3,"file":"model.js","sourceRoot":"","sources":["../../../../src/MSV_mqtt/components/publisher/model.ts"],"names":[],"mappings":";;AAAA,MAAqB,YAAY;IAI/B,YAAY,KAAU;QACpB,IAAI,CAAC,OAAO,GAAG,KAAK,CAAC,OAAO,CAAC;QAC7B,IAAI,CAAC,OAAO,GAAG,KAAK,CAAC,EAAE,CAAC;QACxB,IAAI,CAAC,KAAK,GAAG,KAAK,CAAC,KAAK,CAAC;QACzB,yBAAY,IAAI,EAAG;IACrB,CAAC;CACF;AAVD,+BAUC"}

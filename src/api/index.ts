@@ -8,10 +8,10 @@ import chalk from 'chalk';
 //Swagger --->
 //const SwaggerUI = require('swagger-ui-express');
 //const SwaggerJsDoc = require('swagger-jsdoc');
-const swaggerDoc = require('../../src/swagger.json');
+//const swaggerDoc = require('../../src/swagger.json');
 //import swaggerDoc from '../../src/swagger.json';
-import SwaggerUI from 'swagger-ui-express';
-import SwaggerJsDoc from 'swagger-jsdoc';
+//import SwaggerUI from 'swagger-ui-express';
+//import SwaggerJsDoc from 'swagger-jsdoc';
 const app: Application = express();
 import path from 'path';
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
@@ -25,12 +25,17 @@ import user from './components/users/network';
 import admin from './components/admin/network';
 import auth from './components/auth/network';
 import foods from './components/foods/network'
-
-app.use('/api-doc', SwaggerUI.serve, SwaggerUI.setup(swaggerDoc));
+import poll from './components/polls/network'
+import markets from './components/foods_market/network';
+import members from './components/family_members/network'
+//app.use('/api-doc', SwaggerUI.serve, SwaggerUI.setup(swaggerDoc));
 app.use('/users', user);
 app.use('/foods', foods)
 app.use('/admins', admin);
 app.use('/authorization', auth);
+app.use('/polls', poll);
+app.use('/markets', markets);
+app.use('/members', members)
 app.use(errors);
 
 app.listen(config.api.port, () => {

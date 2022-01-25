@@ -46,6 +46,7 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const auth = __importStar(require("../../../authorizations/index"));
 const chalk_1 = __importDefault(require("chalk"));
 const index_1 = __importDefault(require("./index"));
+const index_2 = __importDefault(require("../users/index"));
 const configurations_1 = require("../../../configurations");
 function default_1(injectedStore) {
     let store = injectedStore;
@@ -55,8 +56,10 @@ function default_1(injectedStore) {
     let table2 = 'authentications';
     let procedence = '[CONTROLLER AUTH]';
     const insert = (email, password, type) => {
+        console.log('this is the email auth--->', email);
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
-            const data = yield store.query(table2, { email: email }, new Array(type));
+            const data = yield (yield store.query(table2, { email: email }, new Array(type)))[0];
+            console.log('this is the data auth-->', data);
             if (!data) {
                 reject({
                     msg: 'correo no valido o usuario inexistente',
@@ -73,10 +76,15 @@ function default_1(injectedStore) {
                     id: data.id
                 });
                 const _a = configurations_1.config.usingDb.mongoDB ? dataAuth._doc : dataAuth, { id, encrypted_password, created_at, updated_at, user_id, email, _id } = _a, newObject = __rest(_a, ["id", "encrypted_password", "created_at", "updated_at", "user_id", "email", "_id"]);
-                resolve(Object.assign({ id: user_id }, newObject));
+                const getUser = yield index_2.default.get({ filter: { id: user_id } });
+                //console.log('this is the getUser--->', getUser)
+                // const typeUpdate = 'user_update'
+                //const userUpdated: any = await controllerUser.update({datas: Object.assign(getUser, {count_login: +getUser?.count_login + 1}), id: user_id, type: typeUpdate })
+                //console.log('this is the userUpdated-->', userUpdated)
+                resolve(Object.assign({ id: user_id, email: getUser.email, full_name: getUser.full_name }, newObject));
             }
             else {
-                reject({ msg: 'Invalid Password' });
+                return reject({ msg: 'Invalid Password login', statusCode: 400 });
             }
         }));
     };

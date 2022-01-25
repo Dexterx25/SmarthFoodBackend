@@ -40,6 +40,7 @@ function default_1(injectedStore, injectedCache) {
     function insert({ datas, type }) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                console.log('this is the datas insertttt-->', datas);
                 const responValidator = yield (0, index_2.Validator)(datas);
                 if (responValidator) {
                     reject({ msg: responValidator });
@@ -55,10 +56,11 @@ function default_1(injectedStore, injectedCache) {
                     }, 'users');
                     const { id } = registerRespon, rest = __rest(registerRespon, ["id"]);
                     //Si quiero que logue automaticamente, descomento esto de acá abajo
-                    //const { email } = Object.assign(registerRespon, responAuth);
-                    // const res = await controllerAuth.insert(email, datas.password, table);
-                    console.log('RES CONTROLLER AUTH REGISTER---', registerRespon);
-                    resolve({ id });
+                    const { email } = Object.assign(registerRespon, responAuth);
+                    console.log('lets go to login--->', email);
+                    const { token } = yield index_1.default.insert(email, datas.password, table);
+                    console.log('this is the REGISTER--->', registerRespon);
+                    resolve(Object.assign(rest, { token }));
                 }
                 catch (e) {
                     yield (0, index_2.midlleHandleError)(e, table, datas, resolve, reject);
@@ -113,11 +115,11 @@ function default_1(injectedStore, injectedCache) {
     function update({ datas, id, type }) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
-                const responValidator = yield (0, index_2.Validator)(datas);
-                if (responValidator) {
-                    reject({ msg: responValidator });
-                    return false;
-                }
+                // const responValidator = await Validator(datas);
+                // if (responValidator) {
+                //   reject({ msg: responValidator });
+                //   return false;
+                // }
                 const data = Object.assign(new model_1.default(datas), { id });
                 try {
                     const dataRespon = yield store.upsert(table, { data, type });

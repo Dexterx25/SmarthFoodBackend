@@ -63,7 +63,8 @@ export async function insert(table: string, { data, type }: any) {
             result.rows[0],
             '<----hasta aqui'
           );
-          resolve(result.rows[0]);
+          const res =  type == 'family_member_register' ? result.rows : result.rows[0]
+          resolve(res);
         }
       }
     );
@@ -104,19 +105,22 @@ export function upsert(table: string, { data, type }: any) {
   }
 }
 
-export async function query(table: string, typequery: any, joins: any) {
+export async function query(table: string, typequery: any, joins?: any) {
   console.log(chalk.redBright('comming to query--->'), table, typequery, joins);
   let joinQuery = '';
   let query = '';
+  let select = ''
   if (joins.length) {
     console.log('One Query');
-    const { theJoinQuery, theQuery }: any = await queryDatas(
+    const { theJoinQuery, theQuery, selected }: any = await queryDatas(
       table,
       typequery,
       joins
     );
+
     joinQuery = theJoinQuery;
     query = theQuery;
+    select = selected
   } else {
     console.log('multiple query');
     const { theQuery }: any = await queryDatas(table, typequery, null);
@@ -124,11 +128,11 @@ export async function query(table: string, typequery: any, joins: any) {
   }
   return new Promise((resolve, reject) => {
     pool.query(
-      `SELECT * FROM ${table} ${joinQuery}  ${query}`,
+     `SELECT ${select ? select : '*'} FROM ${table} ${joinQuery}  ${query}`,
       (err: any, res: any) => {
         if (err) return reject(err);
-        console.log('RESPONSE QUERY DATABASE', res.rows[0]);
-        resolve(res.rows[0]);
+        console.log('RESPONSE QUERY DATABASE', res.rows);
+        resolve(res.rows);
       }
     );
   });

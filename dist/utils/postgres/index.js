@@ -15,9 +15,13 @@ const insertTionDatas = (data, type) => {
     let $values;
     switch (type) {
         case 'email_register':
+        case 'food_register':
         case 'facebook_register':
         case 'ios_register':
         case 'insert_auth_users':
+        case 'poll_register':
+        case 'family_member_register':
+        case 'food_market_register':
             $keys = Object.keys($data).toString().replace('[', '').replace(']', '');
             $values = `${Object.values($data)
                 .map((e) => `'${e}'`)
@@ -39,7 +43,21 @@ const queryDatas = (table, typequery, joins) => {
     let queryValues = Object.values(typequery);
     let theJoinQuery = '';
     let theQuery = '';
+    let selected = '';
     switch (table) {
+        case 'foods':
+            if (joins) {
+                theJoinQuery = `INNER JOIN ${joins[0]} ON ${table}.${query[0]} = ${joins[0]}.id`;
+                selected = 'foods.id, foods.picture, foods.description, foods.name, category_foods.category_name';
+            }
+            theQuery = `WHERE ${table}.${query[0]} = '${queryValues[0]}'`;
+            console.log('datasFilter--->', theJoinQuery, 'query-->', theQuery);
+            return {
+                theJoinQuery,
+                theQuery,
+                selected
+            };
+            break;
         case 'authentications':
             if (joins) {
                 theJoinQuery = `INNER JOIN ${joins[0]} ON ${table}.${query[0]} = ${joins[0]}.${query[0]}`;
@@ -51,6 +69,12 @@ const queryDatas = (table, typequery, joins) => {
                 theQuery
             };
             break;
+        case 'family_members':
+            console.log('consumimos mis miembros-->', query, queryValues);
+            theQuery = `WHERE ${table}.${query[0]} = '${queryValues[0]}'`;
+            return {
+                theQuery
+            };
         default:
             break;
     }
@@ -141,6 +165,12 @@ const getData = (querys, type) => {
                     theQuery.push(`WHERE ${Object.keys($data)[i]} = '${Object.values($data)[i]}' and active = 'TRUE'`);
                 }
             }
+            return {
+                theQuery: theQuery.toString().replace('[', '').replace(']', '')
+            };
+        case 'getPoll':
+            console.log('getPoll SIIIII', querys);
+            theQuery.push(`WHERE user_id = '${querys.user_id}' AND type_id = '${querys.type_id}'`);
             return {
                 theQuery: theQuery.toString().replace('[', '').replace(']', '')
             };

@@ -87,6 +87,7 @@ exports.getToken = getToken;
 function decodeHeader(req) {
     return __awaiter(this, void 0, void 0, function* () {
         const { headers, token } = req;
+        console.log('TOKEN PASADO POR AQUIII-->', token);
         const authorization = !headers ? token : headers.authorization || '';
         const thetoken = yield getToken(authorization);
         const decoded = yield verify(thetoken);

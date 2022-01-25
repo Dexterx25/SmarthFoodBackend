@@ -32,21 +32,48 @@ CREATE INDEX "index_type_users_id" on type_users(id);
 INSERT INTO type_users(id, name_type_user) values('1','basic_user');
 INSERT INTO type_users(id, name_type_user) values('2','super_user');
 
+CREATE TABLE genders(
+  id varchar PRIMARY KEY not null,
+  name varchar not null, 
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+CREATE TRIGGER genders
+BEFORE UPDATE ON genders
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE SEQUENCE genders_id_seq OWNED BY genders.id;
+ALTER sequence genders_id_seq INCREMENT BY 1; 
+ALTER TABLE genders ALTER COLUMN id SET DEFAULT nextval('genders_id_seq'::regclass);
+
+CREATE INDEX "index_name_on_genders" on genders(name);
+CREATE INDEX "index_id_on_genders" on genders(id);
+
 CREATE TABLE users( 
   id varchar PRIMARY KEY not null,
   names varchar not null,
   surnames varchar default '',
   full_name varchar default '',
+  gender varchar not null,
   prefix_number varchar,
   type_user_id varchar,
-  active boolean DEFAULT false,
+  gender_id varchar,
+  active boolean DEFAULT true,
+  date_birtday varchar default '',
+  height varchar,
+  weight varchar,
   email varchar not null,
+  count_login varchar default '',
   phone_number varchar,
   avatar varchar default '',
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
       FOREIGN KEY (type_user_id)
           REFERENCES type_users(id)
+          ON DELETE CASCADE,
+      FOREIGN KEY (gender_id)
+          REFERENCES genders(id)
           ON DELETE CASCADE
 );
 
@@ -167,12 +194,11 @@ ALTER TABLE category_foods ALTER COLUMN id SET DEFAULT nextval('category_foods_i
 
 CREATE INDEX "index_category_name_on_category_foods" on category_foods(category_name);
 CREATE INDEX "index_id_on_category_foods" on category_foods(id);
-CREATE INDEX "index_amount_on_category_foods" on category_foods(amount);
 
 CREATE TABLE foods(
   id varchar PRIMARY KEY not null,
   name varchar not null,
-  amount varchar not null,
+  amount varchar DEFAULT '',
   picture varchar DEFAULT '',
   description varchar DEFAULT '',
   url varchar DEFAULT '',
@@ -198,23 +224,7 @@ CREATE INDEX "index_id_on_foods" on foods(id);
 CREATE INDEX "index_kalorie_on_foods" on foods(kalories);
 CREATE INDEX "index_price_on_foods" on foods(price);  
 
-CREATE TABLE genders(
-  id varchar PRIMARY KEY not null,
-  name varchar not null, 
-  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
-CREATE TRIGGER genders
-BEFORE UPDATE ON genders
-FOR EACH ROW
-EXECUTE PROCEDURE trigger_set_timestamp();
 
-CREATE SEQUENCE genders_id_seq OWNED BY genders.id;
-ALTER sequence genders_id_seq INCREMENT BY 1; 
-ALTER TABLE genders ALTER COLUMN id SET DEFAULT nextval('genders_id_seq'::regclass);
-
-CREATE INDEX "index_name_on_genders" on genders(name);
-CREATE INDEX "index_id_on_genders" on genders(id);
 
 CREATE TABLE age_ranges(
   id varchar PRIMARY KEY not null,
@@ -233,7 +243,7 @@ CREATE SEQUENCE age_ranges_id_seq OWNED BY age_ranges.id;
 ALTER sequence age_ranges_id_seq INCREMENT BY 1; 
 ALTER TABLE age_ranges ALTER COLUMN id SET DEFAULT nextval('age_ranges_id_seq'::regclass);
 
-CREATE INDEX "index_name_on_age_ranges" on age_ranges(name);
+CREATE INDEX "index_name_on_age_ranges" on age_ranges(range_name);
 CREATE INDEX "index_id_on_age_ranges" on age_ranges(id);
 
 CREATE TABLE category_food_component(
@@ -266,7 +276,8 @@ CREATE INDEX "index_id_on_category_food_component" on category_food_component(id
     gross_weight varchar DEFAULT '',
     useful_weight varchar DEFAULT '',
     net_weight varchar DEFAULT '',
-    unit_measure_home, age_ranges varchar DEFAULT '',
+    unit_measure_home varchar default '', 
+    age_ranges varchar DEFAULT '',
     image varchar DEFAULT '',
     category_food_component_id  varchar not null,
     age_ranges_id varchar not null,
@@ -300,21 +311,47 @@ CREATE INDEX "index_id_on_category_food_component" on category_food_component(id
   CREATE INDEX "index_unit_measure_home_on_food_component" on food_component(unit_measure_home, age_ranges);
   CREATE INDEX "index_net_weight_on_food_component" on food_component(net_weight);
 
+CREATE TABLE family_members(
+   id varchar PRIMARY KEY not null,
+   gender_id varchar not null,
+   date_birtday varchar not null,
+   parent varchar not null,
+   user_id varchar not null,
+   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+   updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+   FOREIGN KEY(user_id)
+    REFERENCES users(id),
+   FOREIGN KEY (gender_id)
+    REFERENCES genders(id)
+);
+CREATE TRIGGER family_members
+BEFORE UPDATE ON family_members
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE SEQUENCE family_members_id_seq OWNED BY family_members.id;
+ALTER sequence family_members_id_seq INCREMENT BY 1; 
+ALTER TABLE family_members ALTER COLUMN id SET DEFAULT nextval('family_members_id_seq'::regclass);
+
+
 CREATE TABLE foods_market(
   id varchar PRIMARY KEY not null,
-  name varchar not null,
+  name varchar default '',
   user_id varchar not null,
-  total_amount varchar not null,
   picture varchar DEFAULT '',
-  total_kalories varchar not null,
-  markets varchar not null,
-  days_market varchar not null,
-  date_time_init TIMESTAMP not null,
-  date_time_finish TIMESTAMP not null,
+  food_id varchar not null,
+  family_member_id varchar not null,
+  times_recurral_market varchar not null,
+  date_init varchar default '',
+  date_finish varchar default '',
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
   FOREIGN KEY (user_id)
-    REFERENCES users(id)
+    REFERENCES users(id),
+  FOREIGN KEY (food_id)
+    REFERENCES foods(id),
+  FOREIGN KEY (family_member_id)
+    REFERENCES family_members(id)
 );
 
 CREATE TRIGGER foods_market
@@ -328,8 +365,30 @@ ALTER TABLE foods_market ALTER COLUMN id SET DEFAULT nextval('foods_market_id_se
 
 CREATE INDEX "index_name_on_foods_market" on foods_market(name);
 CREATE INDEX "index_id_on_foods_market" on foods_market(id);
-CREATE INDEX "index_total_kalories_on_foods_market" on foods_market(total_kalories);
-CREATE INDEX "index_total_amount_on_foods_market" on foods_market(total_amount);
+
+
+CREATE TABLE foods_component_market(
+  id varchar PRIMARY KEY not null,
+  food_market_id varchar not null,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  FOREIGN KEY (food_market_id)
+    REFERENCES foods_market(id)
+);
+
+CREATE TRIGGER foods_component_market
+BEFORE UPDATE ON foods_component_market
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE SEQUENCE foods_component_market_id_seq OWNED BY foods_component_market.id;
+ALTER sequence foods_component_market_id_seq INCREMENT BY 1; 
+ALTER TABLE foods_component_market ALTER COLUMN id SET DEFAULT nextval('foods_component_market_id_seq'::regclass);
+
+CREATE INDEX "index_id_on_foods_component_market" on foods_component_market(id);
+CREATE INDEX "index_id_on_foods_market_id" on foods_component_market(food_market_id);
+
+
 
 CREATE TABLE history_foods_market(
   id varchar PRIMARY KEY not null,
@@ -380,27 +439,47 @@ CREATE SEQUENCE family_user_market_id_seq OWNED BY family_user_market.id;
 ALTER sequence family_user_market_id_seq INCREMENT BY 1; 
 ALTER TABLE family_user_market ALTER COLUMN id SET DEFAULT nextval('family_user_market_id_seq'::regclass);
 
-
-CREATE TABLE family_members(
-   id varchar PRIMARY KEY not null,
-   gender varchar not null,
-   age varchar not null,
-   parent varchar not null,
-   user_id varchar not null,
-   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-   updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
-   FOREIGN KEY(user_id)
-    REFERENCES users(id)
+CREATE TABLE polls_type(
+  id varchar PRIMARY KEY not null,
+  name varchar not null,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
-CREATE TRIGGER family_members
-BEFORE UPDATE ON family_members
+CREATE TRIGGER polls_type
+BEFORE UPDATE ON polls_type
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
-CREATE SEQUENCE family_members_id_seq OWNED BY family_members.id;
-ALTER sequence family_members_id_seq INCREMENT BY 1; 
-ALTER TABLE family_members ALTER COLUMN id SET DEFAULT nextval('family_members_id_seq'::regclass);
+CREATE SEQUENCE polls_type_id_seq OWNED BY polls_type.id;
+ALTER sequence polls_type_id_seq INCREMENT BY 1; 
+ALTER TABLE polls_type ALTER COLUMN id SET DEFAULT nextval('polls_type_id_seq'::regclass);
 
+insert into polls_type(id, name) values('1', 'initial_market_poll');
+
+CREATE TABLE polls(
+  id varchar PRIMARY KEY not null,
+  times_recurral_market varchar not null,
+  count_persons varchar not null,
+  sugest_snaks boolean default false,
+  user_id varchar not null,
+  type_id varchar not null,
+  sugest_without_dairy boolean default false,
+  vegetarian_food boolean default false,
+   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+   updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    FOREIGN KEY (user_id)
+      REFERENCES users(id),
+    FOREIGN KEY (type_id)
+      REFERENCES polls_type(id)
+);
+CREATE TRIGGER polls
+BEFORE UPDATE ON polls
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE SEQUENCE polls_id_seq OWNED BY polls.id;
+ALTER sequence polls_id_seq INCREMENT BY 1; 
+ALTER TABLE polls ALTER COLUMN id SET DEFAULT nextval('polls_id_seq'::regclass);
 
 INSERT into  category_food_component(id, name) values('1', 'Cereal'), ('2', 'Raices'), ('3', 'Tuberculos'), ('4', 'Platanos'), ('5','Frutas'), ('6', 'Leche y Productos Lacteos'), ('7', 'Carne'), ('8','Huevos'), ('9', 'Frutos Secos y Semillas'), ('10', 'Grasas'), ('11','Azucares'), ('12', 'Leguminosas'), ('13', 'Verduras');
 INSERT INTO age_ranges(id, range_name, range_init, range_finish) values('1','2-5','2', '5'), ('2','6-9', '6', '9'), ('3','10-13','10', '13'), ('4', '14-17', '14', '17'), ('5', '18-59', '18', '59');
@@ -529,7 +608,7 @@ INSERT INTO food_component(category_id, category_food_component_id, name,code, g
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('2','6','Piña','C072','115','55','63,25','1 tajada delgada', '5', '2', 'Piña_2_woman_18-59' );
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('2','6','Tomate de árbol','C082','172','86','147,92','2 unidades medianas', '5', '2', 'Tomate de árbol_2_woman_18-59' );
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('2','6','Uchuvas','C084','69','94','64,86','13 unidades medianas', '5', '2', 'Uchuvas_2_woman_18-59' );
-INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('2','12','Frijol cargamanto rosado con plátano verde*','T012','2,5','58,8','100','58,8','1/2 cucharón', '5', '2', 'Frijol cargamanto rosado con plátano verde_2_woman_18-59' );
+INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('2','12','Frijol cargamanto rosado con plátano verde*','T012','58,8','100','58,8','1/2 cucharón', '5', '2', 'Frijol cargamanto rosado con plátano verde_2_woman_18-59' );
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('2','12','Frijol bola roja con plátano verde*','T006','65','100','65','1/2 cucharón', '5', '2', 'Frijol bola roja con plátano verde_2_woman_18-59' );
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('2','12','Frijol nima con guiso**','T015','70','100','70','1/2 cucharón', '5', '2', 'Frijol nima con guiso_2_woman_18-59' );
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('2','12','Frijol caraota con guiso**','T009','70','100','70','1/2 cucharón', '5', '2', 'Frijol caraota con guiso**_2_woman_18-59' );
@@ -625,7 +704,7 @@ INSERT INTO food_component(category_id, category_food_component_id, name,code, g
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('3','9','Macadamia tostada sin sal','C046','12','100','12','3 unidades medianas', '5', '2', 'Macadamia tostada sin sal_3_woman_18-59' );
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('3','9','Coco deshidratado','C020','18','100','18','1 cucharadas soperas colmadas', '5', '2', 'Coco deshidratado_3_woman_18-59' );
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('3','9','Coco fresco rallado','C019','28','45','12,6','2 cucharadas sopera colmadas', '5', '2', 'Coco fresco rallado_3_woman_18-59' );
-INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('3','10','Aceite de girasol','D004','1','5','100','5','1 cucharadita', '5', '2', 'Aceite de girasol_3_woman_18-59' );
+INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('3','10','Aceite de girasol','D004','5','100','5','1 cucharadita', '5', '2', 'Aceite de girasol_3_woman_18-59' );
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('3','10','Aceite de maíz','D006','5','100','5','1 cucharadita', '5', '2', 'Aceite de maíz_3_woman_18-59' );
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('3','10','Aceite de soya','D012','5','100','5','1 cucharadita', '5', '2', 'Aceite de soya_3_woman_18-59' );
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('3','10','Aceite de ajonjolí','D001','5','100','5','1 cucharadita', '5', '2', 'Aceite de ajonjolí_3_woman_3_18-59' );
@@ -709,7 +788,7 @@ INSERT INTO food_component(category_id, category_food_component_id, name,code, g
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('1','6','Queso mozzarella de leche entera','G019','56','100','56','1 tajada semigruesa', '5', '1');
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('1','6','Leche baja en grasa','G007','400','100','400','1 vaso mediano', '5', '1');
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('1','6','Yogur dietético','N005','400','100','400','1 vaso mediano', '5', '1');
-INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('1','7','Atún enlatado en aceite','E003','2,5','100','100','100','1/3 lata mediana', '5', '1');
+INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('1','7','Atún enlatado en aceite','E003','100','100','100','1/3 lata mediana', '5', '1');
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('1','7','Carne de cerdo','F011','150','100','150','1/8 de libra', '5', '1');
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('1','7','Carne de res','F099','150','100','150','1/8 de libra', '5', '1');
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('1','8','Huevo de gallina crudo','J004','125','90','112,5','1 unidad pequeña', '5', '1');
@@ -897,7 +976,7 @@ INSERT INTO food_component(category_id, category_food_component_id, name,code, g
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('3','10','Mantequilla','D015','6','100','6','1 cucharadita dulcera rasa', '5', '1');
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('3','10','Aceite de palma','D009','5','100','5','1 cucharadita', '5', '1');
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('3','10','Manteca de cerdo','D014','4','100','4','1 cucharadita dulcera', '5', '1');
-INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('3','6','Leche de vaca en polvo entera','G008','2','54','100','54','6 cucharadas soperas rasas', '5', '1');
+INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('3','6','Leche de vaca en polvo entera','G008','54','100','54','6 cucharadas soperas rasas', '5', '1');
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('3','6','Leche de vaca líquida entera pasterizada','G012','400','100','400','1 vaso mediano', '5', '1');
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('3','6','Kumis, entero, con azúcar','G002','300','100','300','1 vaso pequeño', '5', '1');
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('3','6','yogurt, bebible, entero, con azúcar','G028','300','100','300','1 vaso pequeño', '5', '1');
@@ -975,7 +1054,7 @@ INSERT INTO food_component(category_id, category_food_component_id, name,code, g
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('1','9','Macadamia tostada sin sal','C046','12','100','12','3 unidades medianas', '4', '2');
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('1','9','Coco deshidratado','C020','18','100','18','1 cucharadas soperas colmadas', '4', '2');
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('1','9','Coco fresco rallado','C019','28','45','12,6','2 cucharadas sopera colmadas', '4', '2');
-INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('1','10','Aceite de girasol','D004','1,5','7,5','100','7,5','1 cucharadita', '4', '2');
+INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('1','10','Aceite de girasol','D004','7,5','100','7,5','1 cucharadita', '4', '2');
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('1','10','Aceite de maíz','D006','7,5','100','7,5','1 cucharadita', '4', '2');
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('1','10','Aceite de soya','D012','7,5','100','7,5','1 cucharadita', '4', '2');
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('1','10','Aceite de ajonjolí','D001','7,5','100','7,5','1 cucharadita', '4', '2');
@@ -1432,3 +1511,28 @@ INSERT INTO food_component(category_id, category_food_component_id, name,code, g
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('3','11','Azúcar granulada','K003','23','100','23','2 cucharadas soperas colmadas', '4', '1');
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('3','11','Miel de abejas','K031','21','100','21','1 cucharada sopera', '4', '1');
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id) VALUES ('3','11','Panela','K033','29','100','29','1 trozo pequeño', '4', '1');
+
+
+INSERT INTO foods(id, name, category_id) values('1','Tortilla de huevo con puré', '1');
+INSERT INTO foods(id, name, category_id) values('2','Huevos revueltos con platano madura', '1');
+INSERT INTO foods(id, name, category_id) values('3','Huevos pochados con queso', '1');
+INSERT INTO foods(id, name, category_id) values('4','Omele de huevos con galletas', '1');
+INSERT INTO foods(id, name, category_id) values('5','Tortilla de huevo con espinaca', '1');
+INSERT INTO foods(id, name, category_id) values('6','Huevos con zanahoria rallada', '1');
+INSERT INTO foods(id, name, category_id) values('7','Huevos revueltos con queso derretido', '1');
+
+INSERT INTO foods(id, name, category_id) values ('8', 'Tilapia con arroz de verduras', '2');
+INSERT INTO foods(id, name, category_id) values ('9', 'Crema de ahuyama, carne y ensalada', '2');
+INSERT INTO foods(id, name, category_id) values ('10', 'Pechuga asada, arroz y ensalada', '2');
+INSERT INTO foods(id, name, category_id) values ('11', 'Pollodo horneado y papa cocida', '2');
+INSERT INTO foods(id, name, category_id) values ('12', 'Carne de res asada con yuca', '2');
+INSERT INTO foods(id, name, category_id) values ('13', 'Filete de tilapia con ensalada', '2');
+INSERT INTO foods(id, name, category_id) values ('14', 'Pollo salteado al wok y papa cocida', '2');
+
+INSERT INTO foods(id, name, category_id) values ('15', 'Croqueta de espinaca', '4');
+INSERT INTO foods(id, name, category_id) values ('16', 'Sandwich de berenjena', '4');
+INSERT INTO foods(id, name, category_id) values ('17', 'Sandwich de atún', '4');
+INSERT INTO foods(id, name, category_id) values ('18', 'Ensalada cesar', '4');
+INSERT INTO foods(id, name, category_id) values ('19', 'Tortilla con queso, maiz y verdura', '4');
+INSERT INTO foods(id, name, category_id) values ('20', 'Quesadilla con queso crema y pico gallo', '4');
+INSERT INTO foods(id, name, category_id) values ('21', 'Sandwich cubano', '4');

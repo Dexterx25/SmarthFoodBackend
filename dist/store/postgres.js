@@ -62,7 +62,8 @@ function insert(table, { data, type }) {
                 }
                 else {
                     console.log(chalk.redBright(`succefull ${type}!`), result.rows[0], '<----hasta aqui');
-                    resolve(result.rows[0]);
+                    const res = type == 'family_member_register' ? result.rows : result.rows[0];
+                    resolve(res);
                 }
             });
         }));
@@ -104,11 +105,13 @@ function query(table, typequery, joins) {
         console.log(chalk.redBright('comming to query--->'), table, typequery, joins);
         let joinQuery = '';
         let query = '';
+        let select = '';
         if (joins.length) {
             console.log('One Query');
-            const { theJoinQuery, theQuery } = yield (0, index_1.queryDatas)(table, typequery, joins);
+            const { theJoinQuery, theQuery, selected } = yield (0, index_1.queryDatas)(table, typequery, joins);
             joinQuery = theJoinQuery;
             query = theQuery;
+            select = selected;
         }
         else {
             console.log('multiple query');
@@ -116,11 +119,11 @@ function query(table, typequery, joins) {
             query = theQuery;
         }
         return new Promise((resolve, reject) => {
-            db_1.pool.query(`SELECT * FROM ${table} ${joinQuery}  ${query}`, (err, res) => {
+            db_1.pool.query(`SELECT ${select ? select : '*'} FROM ${table} ${joinQuery}  ${query}`, (err, res) => {
                 if (err)
                     return reject(err);
-                console.log('RESPONSE QUERY DATABASE', res.rows[0]);
-                resolve(res.rows[0]);
+                console.log('RESPONSE QUERY DATABASE', res.rows);
+                resolve(res.rows);
             });
         });
     });

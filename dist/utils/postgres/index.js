@@ -48,10 +48,10 @@ const queryDatas = (table, typequery, joins) => {
         case 'foods':
             if (joins) {
                 theJoinQuery = `INNER JOIN ${joins[0]} ON ${table}.${query[0]} = ${joins[0]}.id`;
-                selected = 'foods.id, foods.picture, foods.description, foods.name, category_foods.category_name';
+                selected = 'foods.id, foods.picture, foods.description, foods.name, category_foods.category_name, foods.components';
             }
             theQuery = `WHERE ${table}.${query[0]} = '${queryValues[0]}'`;
-            console.log('datasFilter--->', theJoinQuery, 'query-->', theQuery);
+            console.log('datasFilterxd--->', theJoinQuery, 'query-->', theQuery);
             return {
                 theJoinQuery,
                 theQuery,

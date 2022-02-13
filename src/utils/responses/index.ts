@@ -48,7 +48,7 @@ export let ConsoleResponse = {
   success: function (procedence: string, message: string) {
     console.warn(
       `${chakl.green(
-        `[Success Response >>> (${procedence})]  \n`
+        `[Success Response xddd >>> (${procedence})]  \n`
       )}${chakl.greenBright(`====> ${JSON.stringify(message)}`)}`
     );
   }

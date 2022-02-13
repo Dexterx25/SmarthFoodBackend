@@ -10,7 +10,6 @@ const router: Router = Router();
 
 import multer from 'multer';
 import mimeTypes from 'mime-types';
-import { FoodModel } from './model';
 
 const storage = multer.diskStorage({
   destination: 'public/photos',
@@ -29,13 +28,13 @@ router.get('/', secure('list'), list);
 router.put('/:id', secure('update'), upload.single('file'), update);
 router.delete('/:id', secure('delete'), remove);
 router.patch('/:id/active', secure('active'), patch);
-let procedence = 'FOOD NETWORK';
+let procedence = 'FOOD_MARKET_FOOD_COMPONENT';
 
 async function upsert(req: Request, res: Response, next: NextFunction) {
   console.log('This IS The File:', req.files);
 
   const datas: Record<string, unknown> = {
-    type: 'food_register',
+    type: 'food_market_food_component_register',
     datas: req.body,
     files: req.files
   };
@@ -74,7 +73,11 @@ async function get(req: Request, res: Response, next: NextFunction) {
 async function list(req: Request, res: Response, next: NextFunction) {
   console.log('this is the list Foods--->', req.query)
   const query:any = req.query?.filter
-  await controller.list(query)
+  const dataToController = {
+    query,
+    token:req.headers.authorization
+  }
+  await controller.list(dataToController)
     .then((respon) => {
       ServerResponse.success(req, res, respon, 200);
     })

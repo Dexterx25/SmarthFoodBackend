@@ -44,7 +44,7 @@ exports.ConsoleResponse = {
         console.warn(`${chalk_1.default.red(`[Handle Fatal Error >>> (${procedence})] \n`)} ${chalk_1.default.magentaBright(`====> ${message}`)}`);
     },
     success: function (procedence, message) {
-        console.warn(`${chalk_1.default.green(`[Success Response >>> (${procedence})]  \n`)}${chalk_1.default.greenBright(`====> ${JSON.stringify(message)}`)}`);
+        console.warn(`${chalk_1.default.green(`[Success Response xddd >>> (${procedence})]  \n`)}${chalk_1.default.greenBright(`====> ${JSON.stringify(message)}`)}`);
     }
 };
 //# sourceMappingURL=index.js.map

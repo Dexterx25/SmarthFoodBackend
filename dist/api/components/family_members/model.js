@@ -5,12 +5,11 @@ class FamilyMembersModel {
     constructor(datas) {
         this.list = datas.list.reduce((acc, item) => {
             if (item) {
-                const { date_birtday, parent, user_id } = item;
+                const { date_birtday, parent } = item;
                 acc.push({
                     gender_id: item.gender == 'Male' ? 1 : item.gender == 'Female' ? 2 : '',
                     date_birtday,
                     parent,
-                    user_id
                 });
             }
             return acc;

@@ -45,7 +45,7 @@ function upsert(req, res, next) {
             files: req.files
         };
         console.log('UPSERTTTTT');
-        console.log('body--->', datas);
+        console.log('body foodMarket--->', datas);
         yield index_1.default
             .insert(datas)
             .then((respon) => {

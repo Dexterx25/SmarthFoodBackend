@@ -36,74 +36,69 @@ export default function (injectedStore: any, injectedCache: any) {
         return false;
       }
      
-      // const my_first_poll:any = await controllerPoll.get({filter, token})
-      // console.log('this is my first_polllll-->', my_first_poll)
-      // console.log('this is the DataFoodsIdList', datas.foodsListId)
-      // console.log('THIS IS THE family-Member--->', family_members)
-      // let listFamily_member_id = []
-      //     listFamily_member_id = family_members.reduce((acc:any, item:any) =>{
-      //     if(item.id){
-      //       acc.push({
-      //         family_member_id:item.id
-      //       })
-      //     }
-      //     return acc
-      //    },[])
-
-      // let data = {}
-      //      datas.listFamily_member_id = listFamily_member_id
-      //      datas.user_id = id
-      //      datas.foodsListId = datas.foodsListId.reduce((acc:any, item:any) =>{
-      //       if(item.id){
-      //         acc.push({
-      //           food_id:item.id,
-      //           date:item.date
-      //         })
-      //       }
-      //       return acc
-      //      }, []) 
-      //      datas.days_market = my_first_poll.times_recurral_market == 'Mensual' ? '30' : my_first_poll.times_recurral_market == 'Quincenal' ? '15'  : my_first_poll.times_recurral_market == 'Semanal' ? '7' : ''
-      //      datas.date_init = datas.foodsListId.sort((a:any, b:any) => +new Date(a.date) - +new Date(b.date))
-      //      // my_first_poll.find((e:any) => e.type_id == '1').times_recurral_market
-      //      console.log('this is the dataList-->', datas)
-          
-      //      data = new Markets(datas);
-      //      console.log('AQUIII-->',datas.date_init[datas.date_init.length - 1])
       try {
+        let listFamily_member_id = []
         const filter:any = {type_id: '1'};
         const query = {token}
+        const my_first_poll:any = await controllerPoll.get({filter, token})
         const family_members: any = await controllerMember.list(query)
+        listFamily_member_id = family_members.reduce((acc:any, item:any) =>{
+          if(item.id){
+            acc.push({
+              family_member_id:item.id
+            })
+          }
+          return acc
+         },[])
+         datas.listFamily_member_id = listFamily_member_id
+         let data = {}
+         datas.user_id = id
+         datas.foodsListId = datas.foodsListId.reduce((acc:any, item:any) =>{
+          if(item.id){
+            acc.push({
+              food_id:item.id,
+              date:item.date
+            })
+          }
+          return acc
+         }, []) 
+         datas.days_market = my_first_poll.times_recurral_market == 'Mensual' ? '30' : my_first_poll.times_recurral_market == 'Quincenal' ? '15'  : my_first_poll.times_recurral_market == 'Semanal' ? '7' : ''
+         datas.date_init = datas.foodsListId.sort((a:any, b:any) => +new Date(a.date) - +new Date(b.date))
+         console.log('this is the dataList-->', datas)
+       
+         data = new Markets(datas);
+         console.log('AQUIII-->',datas.date_init[datas.date_init.length - 1])
         console.log('data FamilyMembers-->', family_members);
-      //   const dataMembersAgruped = datas.listFamily_member_id.reduce((acc:any, item:any) =>{
-      //       if(item){
-      //           acc.push({
-      //             user_id:datas.user_id,
-      //             family_member_id: item.family_member_id,
-      //             times_recurral_market:datas.days_market, 
-      //             date_init:dayjs(datas.date_init[0].date).format('YYYY-MM-DD hh:mm'),
-      //             date_finish:dayjs(datas.date_init[datas.date_init.length - 1].date).format('YYYY-MM-DD hh:mm')
-      //           })
-      //       }
-      //     return acc
-      //   },[])
-      //   console.log('dateFiish--->', dataMembersAgruped)
-      //  let registerRespon:any[] = []
-      //   for (let i = 0; i < datas.foodsListId.length; i++) {
-      //     const {food_id} = datas.foodsListId[i]
-      //       for (let k = 0; k < dataMembersAgruped.length; k++) {
-      //       const dataMembersPrevAgruped = dataMembersAgruped[k]
-      //       const dataToSave = {
-      //         ...dataMembersPrevAgruped,
-      //         food_id
-      //       }
-      //       console.log('this is the DATATOSAVE-->', dataToSave)
-      //         const respo = await store.upsert(table, { data:dataToSave, type }); 
-      //         registerRespon = [...registerRespon, respo]
-      //       }
-      //   }
+        const dataMembersAgruped = datas.listFamily_member_id.reduce((acc:any, item:any) =>{
+            if(item){
+                acc.push({
+                  user_id:datas.user_id,
+                  family_member_id: item.family_member_id,
+                  times_recurral_market:datas.days_market, 
+                  date_init:dayjs(datas.date_init[0].date).format('YYYY-MM-DD hh:mm'),
+                  date_finish:dayjs(datas.date_init[datas.date_init.length - 1].date).format('YYYY-MM-DD hh:mm')
+                })
+            }
+          return acc
+        },[])
+        console.log('dateFiish--->', dataMembersAgruped)
+       let registerRespon:any[] = []
+        for (let i = 0; i < datas.foodsListId.length; i++) {
+          const {food_id} = datas.foodsListId[i]
+            for (let k = 0; k < dataMembersAgruped.length; k++) {
+            const dataMembersPrevAgruped = dataMembersAgruped[k]
+            const dataToSave = {
+              ...dataMembersPrevAgruped,
+              food_id
+            }
+            console.log('this is the DATATOSAVE-->', dataToSave)
+              const respo = await store.upsert(table, { data:dataToSave, type }); 
+              registerRespon = [...registerRespon, respo]
+            }
+        }
       
-      //   console.log('RES create Foood---', registerRespon);
-        resolve(family_members );
+        console.log('RES create Foood---', registerRespon);
+        resolve(registerRespon );
       } catch (e) {
         await midlleHandleError(e, table, datas, resolve, reject);
       }

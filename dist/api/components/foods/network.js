@@ -31,7 +31,7 @@ const upload = (0, multer_1.default)({
 router.post('/', upload.single('file'), upsert);
 router.get('/:id', get);
 router.get('/', (0, secure_1.default)('list'), list);
-router.put('/:id', (0, secure_1.default)('update'), update);
+router.put('/:id', (0, secure_1.default)('update'), upload.single('file'), update);
 router.delete('/:id', (0, secure_1.default)('delete'), remove);
 router.patch('/:id/active', (0, secure_1.default)('active'), patch);
 let procedence = 'FOOD NETWORK';
@@ -94,8 +94,10 @@ function update(req, res, next) {
         const data = {
             id: req.params.id || req.params._id,
             datas: req.body,
-            type: 'food_update'
+            type: 'food_update',
+            files: req.files
         };
+        console.log('this is the data update-->-->', data);
         yield index_1.default
             .update(data)
             .then((datasAlter) => {

@@ -61,19 +61,28 @@ function default_1(injectedStore, injectedCache) {
             }));
         });
     }
-    function insertList({ datas, type }) {
+    function insertList({ datas, type, token }) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                const { id } = yield auth.decodeHeader({ token });
                 const data = new model_1.FamilyMembersModel(datas);
                 try {
                     if (data.list.length) {
+                        const query = { token };
+                        const family_members = yield list(query);
                         const res = data.list.filter((item) => __awaiter(this, void 0, void 0, function* () {
-                            if (item) {
-                                const dataRes = yield store.upsert(table, { data: item, type });
+                            if (family_members.findIndex((i) => i.parent == 'Me') !== -1) {
+                                if (item.parent !== 'Me') {
+                                    const dataRes = yield store.upsert(table, { data: Object.assign(item, { user_id: id }), type });
+                                    return dataRes;
+                                }
+                            }
+                            else {
+                                const dataRes = yield store.upsert(table, { data: Object.assign(item, { user_id: id }), type });
                                 return dataRes;
                             }
                         }));
-                        console.log('this is the RESSSS-->', res);
+                        console.log('this is the RESSSSxddd-->', res);
                         resolve(res);
                     }
                 }
@@ -88,7 +97,7 @@ function default_1(injectedStore, injectedCache) {
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
                 const { token } = query;
                 const { id } = yield auth.decodeHeader({ token });
-                console.log('LIST CONTROLLER', id);
+                console.log('LIST CONTROLLERMember', id);
                 try {
                     let members = yield cache.list(table);
                     if (!members) {

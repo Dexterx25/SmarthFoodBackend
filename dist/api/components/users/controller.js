@@ -47,6 +47,7 @@ function default_1(injectedStore, injectedCache) {
                     return false;
                 }
                 const data = new model_1.default(datas);
+                console.log('this is the dataMODALL USER MODEL-->', data);
                 try {
                     const registerRespon = yield store.upsert(table, { data, type });
                     const responAuth = yield index_1.default.upsert(registerRespon, {
@@ -60,7 +61,7 @@ function default_1(injectedStore, injectedCache) {
                     console.log('lets go to login--->', email);
                     const { token } = yield index_1.default.insert(email, datas.password, table);
                     console.log('this is the REGISTER--->', registerRespon);
-                    resolve(Object.assign(rest, { token }));
+                    resolve(Object.assign(registerRespon, { token }));
                 }
                 catch (e) {
                     yield (0, index_2.midlleHandleError)(e, table, datas, resolve, reject);

@@ -59,39 +59,38 @@ function default_1(injectedStore, injectedCache) {
                     reject({ msg: 'Es necesario suministrar los dias de este merkado' });
                     return false;
                 }
-                const filter = { type_id: '1' };
-                const query = { token };
-                const family_members = yield index_2.default.list(query);
-                const my_first_poll = yield index_3.default.get({ filter, token });
-                console.log('this is my first_poll-->', my_first_poll);
-                let listFamily_member_id = [];
-                listFamily_member_id = family_members.reduce((acc, item) => {
-                    if (item.id) {
-                        acc.push({
-                            family_member_id: item.id
-                        });
-                    }
-                    return acc;
-                }, []);
-                let data = {};
-                datas.listFamily_member_id = listFamily_member_id;
-                datas.user_id = id;
-                datas.foodsListId = datas.foodsListId.reduce((acc, item) => {
-                    if (item.id) {
-                        acc.push({
-                            food_id: item.id,
-                            date: item.date
-                        });
-                    }
-                    return acc;
-                }, []);
-                datas.days_market = my_first_poll.times_recurral_market == 'Mensual' ? '30' : my_first_poll.times_recurral_market == 'Quincenal' ? '15' : my_first_poll.times_recurral_market == 'Semanal' ? '7' : '';
-                datas.date_init = datas.foodsListId.sort((a, b) => +new Date(a.date) - +new Date(b.date));
-                // my_first_poll.find((e:any) => e.type_id == '1').times_recurral_market
-                console.log('this is the dataList-->', datas);
-                data = new model_1.Markets(datas);
-                console.log('AQUIII-->', datas.date_init[datas.date_init.length - 1]);
                 try {
+                    let listFamily_member_id = [];
+                    const filter = { type_id: '1' };
+                    const query = { token };
+                    const my_first_poll = yield index_3.default.get({ filter, token });
+                    const family_members = yield index_2.default.list(query);
+                    listFamily_member_id = family_members.reduce((acc, item) => {
+                        if (item.id) {
+                            acc.push({
+                                family_member_id: item.id
+                            });
+                        }
+                        return acc;
+                    }, []);
+                    datas.listFamily_member_id = listFamily_member_id;
+                    let data = {};
+                    datas.user_id = id;
+                    datas.foodsListId = datas.foodsListId.reduce((acc, item) => {
+                        if (item.id) {
+                            acc.push({
+                                food_id: item.id,
+                                date: item.date
+                            });
+                        }
+                        return acc;
+                    }, []);
+                    datas.days_market = my_first_poll.times_recurral_market == 'Mensual' ? '30' : my_first_poll.times_recurral_market == 'Quincenal' ? '15' : my_first_poll.times_recurral_market == 'Semanal' ? '7' : '';
+                    datas.date_init = datas.foodsListId.sort((a, b) => +new Date(a.date) - +new Date(b.date));
+                    console.log('this is the dataList-->', datas);
+                    data = new model_1.Markets(datas);
+                    console.log('AQUIII-->', datas.date_init[datas.date_init.length - 1]);
+                    console.log('data FamilyMembers-->', family_members);
                     const dataMembersAgruped = datas.listFamily_member_id.reduce((acc, item) => {
                         if (item) {
                             acc.push({

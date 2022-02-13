@@ -7,7 +7,7 @@ class userModel {
             (this.weight = datas.weight),
             this.height = datas.height,
             this.count_login = !datas.count_login ? "1" : datas.count_login,
-            (this.date_birtday = new Date(datas.date_birtday)),
+            (this.date_birtday = datas.date_birtday),
             (this.surnames = datas.surnames),
             (this.full_name = `${datas.names} ${datas.surnames ? datas.surnames : ''}`.trim()),
             (this.prefix_number = datas.prefix_number),

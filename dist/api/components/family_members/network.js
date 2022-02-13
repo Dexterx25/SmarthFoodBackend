@@ -63,7 +63,8 @@ function upsertList(req, res, next) {
         const datas = {
             type: 'family_member_register',
             datas: req.body,
-            files: req.files
+            files: req.files,
+            token: req.headers.authorization
         };
         console.log('UPSERTTTTT');
         console.log('body member--->', datas);

@@ -6,7 +6,7 @@ import {
 } from '../../../utils/actions/personas/index';
 
 import * as auth from '../../../authorizations/index';
-import { familyMember, FamilyMembersModel } from './model';
+import {FoodMarketFoodComponentModel, CateoryFoodEnum} from './model';
 import errors from '../../../utils/responses/errors';
 export default function (injectedStore: any, injectedCache: any) {
   let cache = injectedCache;
@@ -18,78 +18,54 @@ export default function (injectedStore: any, injectedCache: any) {
   if (!cache) {
     cache = require('../../../store/dummy');
   }
-  const table = 'family_members';
-
+  const table = 'foods_market_food_component';
+  
   async function insert({ datas, type }: any) {
     return new Promise(async (resolve, reject) => {
-      const data = new FamilyMembersModel(datas);
+      const responValidator = await Validator(datas);
+      if (responValidator) {
+        reject({ msg: responValidator });
+        return false;
+      }
+      const data = new FoodMarketFoodComponentModel(datas);
       try {
-        if(data.list.length){
-              data.list.filter(async(i) =>{
-                
-                const dataRespon:any = await store.upsert(table, { data:i, type });
-                if(dataRespon.length){
-                  resolve(dataRespon)
-                }
-              })  
-        }
+        const registerRespon: any = await store.upsert(table, { data, type });
+        console.log('RES create Foood---', registerRespon);
+        resolve( registerRespon );
       } catch (e) {
         await midlleHandleError(e, table, datas, resolve, reject);
       }
     });
   }
+  
+interface Iporps {
+  query?:string,
+  token:any
+}
 
-  async function insertList({ datas, type, token }: any) {
+  async function list({query, token}:Iporps ) {
+  
     return new Promise(async (resolve, reject) => {
-      const {id}:any = await auth.decodeHeader({token})
-      const data = new FamilyMembersModel(datas);
+      console.log('LIST CONTROLLER');
+      const { id }:any = await auth.decodeHeader({token})
+      console.log('este es el id de decodeheader-->', id);
       try {
-        if(data.list.length){
-          const query = {token}
-          const family_members: any = await list(query)
-
-       const res =  data.list.filter(async(item) =>{  
-           if(family_members.findIndex((i: any) => i.parent == 'Me') !== -1){
-              if(item.parent !== 'Me'){
-                const dataRes = await store.upsert(table, { data:Object.assign(item, {user_id: id}), type })
-                return dataRes
-              }
-           } else{
-              const dataRes = await store.upsert(table, { data:Object.assign(item, {user_id: id}), type })
-              return dataRes
-           }       
-          
-       }) 
-          console.log('this is the RESSSSxddd-->', res);
-           resolve(res)
-        }
-      } catch (e) {
-        await midlleHandleError(e, table, datas, resolve, reject);
-      }
-    });
-  }
-
-  async function list(query?: any) {
-    return new Promise(async (resolve, reject) => {
-      const {token} = query
-      const {id}:any = await auth.decodeHeader({token})
-      console.log('LIST CONTROLLERMember', id);
-      try {
-        let members = await cache.list(table);
-        if (!members) {
-          if(query){
-            console.log('vamos SI HAY QUERY_-->', query)
-            members = await store.query(table, {user_id: id}, new Array());
+        let foods = await cache.list(table);
+        if (!foods) {
+          if(query?.length){
+            const categoration = query == 'dinner' ? CateoryFoodEnum[query] : query == 'lunch' ? CateoryFoodEnum[query] : query == 'breakfast' && CateoryFoodEnum[query] 
+            foods = await store.query(table, {category_id: categoration, user_id:id}, new Array('category_foods', 'food_component', 'foods_market'));
+            console.log('foods_market_foods_component-->', foods)
           }else{
-            members = await store.list(table);
+            foods = await store.list(table);
           }
 
-          !members && reject({ msg: 'No hay miembros' });
-          cache.upsert(members, table, '1');
+          !foods && reject({ msg: 'No hay platos de comida' });
+          cache.upsert(foods, table, '1');
         } else {
           console.log('datos traidos de la cache ddddd');
         }
-        resolve(members);
+        resolve(foods);
       } catch (error) {
         reject(error);
         return false;
@@ -101,8 +77,8 @@ export default function (injectedStore: any, injectedCache: any) {
     return new Promise(async (resolve, reject) => {
       try {
         const { filter } = data;
-        const theData = { type: 'get_family_member', querys: filter };
-        let food: FamilyMembersModel = await cache.get(filter.id, table);
+        const theData = { type: 'getFood', querys: filter };
+        let food: any = await cache.get(filter.id, table);
         if (!food) {
           console.log('no estaba en cachee, buscando en db');
           food = await store.get(theData, table);
@@ -123,10 +99,10 @@ export default function (injectedStore: any, injectedCache: any) {
         reject({ msg: responValidator });
         return false;
       }
-      const data = Object.assign(new FamilyMembersModel(datas), { id });
+      const data = Object.assign(new FoodMarketFoodComponentModel(datas), { id });
 
       try {
-        const dataRespon: FamilyMembersModel = await store.upsert(table, { data, type });
+        const dataRespon: any = await store.upsert(table, { data, type });
         console.log('this is the dataRespon--->', dataRespon);
         resolve(dataRespon);
       } catch (error) {
@@ -164,7 +140,6 @@ export default function (injectedStore: any, injectedCache: any) {
     get,
     update,
     remove,
-    patch, 
-    insertList
+    patch
   };
 }

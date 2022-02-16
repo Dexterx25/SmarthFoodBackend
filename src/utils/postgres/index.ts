@@ -67,12 +67,17 @@ export const queryDatas = (table: string, typequery: any, joins: any) => {
         theQuery
       };
       break;
-  case 'family_members':
+  case 'food_component':
     console.log('consumimos mis miembros-->', query, queryValues)
     theQuery = `WHERE ${table}.${query[0]} = '${queryValues[0]}'`;
     return{
       theQuery
     }
+  case 'foods_market_food_component':
+    theQuery = `WHERE ${table}.${query[0]}`
+  return {
+    
+  }
     default:
       break;
   }

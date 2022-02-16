@@ -11,6 +11,7 @@ import errors from '../../../utils/responses/errors';
 import controllerMember from '../family_members/index'
 import controllerPoll from '../polls/index';
 import dayjs from 'dayjs';
+import { foodsMarketFoodComponentDTO, foodsMarketsCreatedDTO, food_componentsInterface } from './interfaces';
 export default function (injectedStore: any, injectedCache: any) {
   let cache = injectedCache;
   let store = injectedStore;
@@ -45,7 +46,10 @@ export default function (injectedStore: any, injectedCache: any) {
         listFamily_member_id = family_members.reduce((acc:any, item:any) =>{
           if(item.id){
             acc.push({
-              family_member_id:item.id
+              family_member_id:item.id,
+              date_birtday:item.date_birtday,
+              gender:item.gender_id == '1' ? 'Male' : item.gender_id == '2' ? 'Female' : null, 
+              gender_id:item.gender_id
             })
           }
           return acc
@@ -57,6 +61,8 @@ export default function (injectedStore: any, injectedCache: any) {
           if(item.id){
             acc.push({
               food_id:item.id,
+              category_name:item.category_name,
+              components:item.components,
               date:item.date
             })
           }
@@ -74,6 +80,9 @@ export default function (injectedStore: any, injectedCache: any) {
                 acc.push({
                   user_id:datas.user_id,
                   family_member_id: item.family_member_id,
+                  date_birtday:item.date_birtday,
+                  gender:item.gender,
+                  gender_id:item.gender_id,
                   times_recurral_market:datas.days_market, 
                   date_init:dayjs(datas.date_init[0].date).format('YYYY-MM-DD hh:mm'),
                   date_finish:dayjs(datas.date_init[datas.date_init.length - 1].date).format('YYYY-MM-DD hh:mm')
@@ -83,21 +92,60 @@ export default function (injectedStore: any, injectedCache: any) {
         },[])
         console.log('dateFiish--->', dataMembersAgruped)
        let registerRespon:any[] = []
+       let dataToCreateComponentFoods: any[] = [];
         for (let i = 0; i < datas.foodsListId.length; i++) {
-          const {food_id} = datas.foodsListId[i]
+          const {food_id, category_name, components} = datas.foodsListId[i]
             for (let k = 0; k < dataMembersAgruped.length; k++) {
             const dataMembersPrevAgruped = dataMembersAgruped[k]
+            const {gender, date_birtday, gender_id} = dataMembersPrevAgruped
             const dataToSave = {
               ...dataMembersPrevAgruped,
-              food_id
+              food_id,
+              category_name,
+              components,
+              gender_id
             }
             console.log('this is the DATATOSAVE-->', dataToSave)
               const respo = await store.upsert(table, { data:dataToSave, type }); 
               registerRespon = [...registerRespon, respo]
+              dataToCreateComponentFoods = [...dataToCreateComponentFoods, Object.assign(respo, {
+                category_name,
+                components,
+                gender,
+                date_birtday,
+                gender_id
+              })]
             }
         }
       
-        console.log('RES create Foood---', registerRespon);
+      //  console.log('RES create Foood---', registerRespon);
+        console.log('RES foods To create componts foods', dataToCreateComponentFoods)
+        //store.query(table, {user_id: id}, new Array());
+        const dataBeForeAssingFoodComponent:foodsMarketsCreatedDTO[] = dataToCreateComponentFoods;
+        const listFoodMarketComponent:food_componentsInterface[] = await store.list('food_component')
+        console.log('this is the listFoodMarketComponents--->', listFoodMarketComponent)
+        const dataAgrupedToCreateAssign:foodsMarketFoodComponentDTO[] = dataBeForeAssingFoodComponent.reduce((acc:foodsMarketFoodComponentDTO[], item:foodsMarketsCreatedDTO)=> {
+
+           if(item.id){
+            const posibleDataForComponentsToThisFood = listFoodMarketComponent.filter(k => JSON.parse(item.components).includes(k.skuu));
+            const posibleDataForComponentsToThisMemberGender = posibleDataForComponentsToThisFood.filter(y => y.gender_id == item.gender_id)
+            const dateDifference = dayjs(item.date_birtday).diff(new Date(), "years") 
+            const posibleDataForComponentsToThisRagueAges =
+             posibleDataForComponentsToThisMemberGender.filter(o => `${dateDifference}` >= o.range_init && `${dateDifference}` <= o.range_finish  )
+            const posibleDataComponentsToTypeFoodTime = posibleDataForComponentsToThisRagueAges.find( e => e.category_name == item.category_name) 
+            console.log('posible data--->', posibleDataForComponentsToThisFood);
+
+               acc.push({
+                 user_id:id,
+                 food_market_id:item.id, 
+                 food_component_id:posibleDataComponentsToTypeFoodTime?.id!
+               })
+             }
+          return acc
+        },[])
+        console.log('dataAgruped to asign component Food to FoodMarketId-->', dataAgrupedToCreateAssign);
+        
+        /// create foods Component Asosation 
         resolve(registerRespon );
       } catch (e) {
         await midlleHandleError(e, table, datas, resolve, reject);

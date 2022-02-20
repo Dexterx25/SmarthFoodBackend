@@ -25,7 +25,7 @@ export default function (injectedStore: any, injectedCache: any) {
       console.log('this is the datas insertttt-->', datas)
       const responValidator = await Validator(datas);
       if (responValidator) {
-        reject({ msg: responValidator });
+        reject({ msg: responValidator, statusCode:400 });
         return false;
       }
       const data = new userModel(datas);
@@ -47,7 +47,7 @@ export default function (injectedStore: any, injectedCache: any) {
          const { email } = Object.assign(registerRespon, responAuth);
          console.log('lets go to login--->', email)
          const { token }: any = await controllerAuth.insert(email, datas.password, table);
-        console.log('this is the REGISTER--->', registerRespon)
+        console.log('this is the REGISTER--->', registerRespon, token)
         resolve(Object.assign(registerRespon, {token}));
       } catch (e) {
         await midlleHandleError(e, table, datas, resolve, reject);

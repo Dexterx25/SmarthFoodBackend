@@ -70,11 +70,11 @@ export default function (injectedStore: any, injectedCache: any) {
          }, []) 
          datas.days_market = my_first_poll.times_recurral_market == 'Mensual' ? '30' : my_first_poll.times_recurral_market == 'Quincenal' ? '15'  : my_first_poll.times_recurral_market == 'Semanal' ? '7' : ''
          datas.date_init = datas.foodsListId.sort((a:any, b:any) => +new Date(a.date) - +new Date(b.date))
-         console.log('this is the dataList-->', datas)
+        // console.log('this is the dataList-->', datas)
        
          data = new Markets(datas);
-         console.log('AQUIII-->',datas.date_init[datas.date_init.length - 1])
-        console.log('data FamilyMembers-->', family_members);
+       //  console.log('AQUIII-->',datas.date_init[datas.date_init.length - 1])
+     //   console.log('data FamilyMembers-->', family_members);
         const dataMembersAgruped = datas.listFamily_member_id.reduce((acc:any, item:any) =>{
             if(item){
                 acc.push({
@@ -90,22 +90,19 @@ export default function (injectedStore: any, injectedCache: any) {
             }
           return acc
         },[])
-        console.log('dateFiish--->', dataMembersAgruped)
+       // console.log('dateFiish--->', dataMembersAgruped)
        let registerRespon:any[] = []
        let dataToCreateComponentFoods: any[] = [];
         for (let i = 0; i < datas.foodsListId.length; i++) {
           const {food_id, category_name, components} = datas.foodsListId[i]
             for (let k = 0; k < dataMembersAgruped.length; k++) {
             const dataMembersPrevAgruped = dataMembersAgruped[k]
-            const {gender, date_birtday, gender_id} = dataMembersPrevAgruped
+            const {gender, date_birtday, gender_id, ...rest} = dataMembersPrevAgruped
             const dataToSave = {
-              ...dataMembersPrevAgruped,
+              ...rest,
               food_id,
-              category_name,
-              components,
-              gender_id
             }
-            console.log('this is the DATATOSAVE-->', dataToSave)
+        //    console.log('this is the DATATOSAVE-->', dataToSave)
               const respo = await store.upsert(table, { data:dataToSave, type }); 
               registerRespon = [...registerRespon, respo]
               dataToCreateComponentFoods = [...dataToCreateComponentFoods, Object.assign(respo, {
@@ -119,19 +116,21 @@ export default function (injectedStore: any, injectedCache: any) {
         }
       
       //  console.log('RES create Foood---', registerRespon);
-        console.log('RES foods To create componts foods', dataToCreateComponentFoods)
+      //  console.log('RES foods To create componts foods', dataToCreateComponentFoods)
         //store.query(table, {user_id: id}, new Array());
         const dataBeForeAssingFoodComponent:foodsMarketsCreatedDTO[] = dataToCreateComponentFoods;
-        const listFoodMarketComponent:food_componentsInterface[] = await store.list('food_component')
-        console.log('this is the listFoodMarketComponents--->', listFoodMarketComponent)
+        const listFoodMarketComponent:food_componentsInterface[] =  await store.query('food_component', '', new Array('category_foods', 'genders', 'age_ranges'));
+        // await store.list('food_component')
+     ///   console.log('this is the listFoodMarketComponents--->', listFoodMarketComponent)
         const dataAgrupedToCreateAssign:foodsMarketFoodComponentDTO[] = dataBeForeAssingFoodComponent.reduce((acc:foodsMarketFoodComponentDTO[], item:foodsMarketsCreatedDTO)=> {
 
            if(item.id){
             const posibleDataForComponentsToThisFood = listFoodMarketComponent.filter(k => JSON.parse(item.components).includes(k.skuu));
             const posibleDataForComponentsToThisMemberGender = posibleDataForComponentsToThisFood.filter(y => y.gender_id == item.gender_id)
-            const dateDifference = dayjs(item.date_birtday).diff(new Date(), "years") 
+            const dateDifference = dayjs(new Date()).diff(item.date_birtday, "years") 
             const posibleDataForComponentsToThisRagueAges =
              posibleDataForComponentsToThisMemberGender.filter(o => `${dateDifference}` >= o.range_init && `${dateDifference}` <= o.range_finish  )
+             console.log('posiblePosibleDate-->', posibleDataForComponentsToThisRagueAges)
             const posibleDataComponentsToTypeFoodTime = posibleDataForComponentsToThisRagueAges.find( e => e.category_name == item.category_name) 
             console.log('posible data--->', posibleDataForComponentsToThisFood);
 
@@ -143,7 +142,7 @@ export default function (injectedStore: any, injectedCache: any) {
              }
           return acc
         },[])
-        console.log('dataAgruped to asign component Food to FoodMarketId-->', dataAgrupedToCreateAssign);
+     //   console.log('dataAgruped to asign component Food to FoodMarketId-->', dataAgrupedToCreateAssign);
         
         /// create foods Component Asosation 
         resolve(registerRespon );

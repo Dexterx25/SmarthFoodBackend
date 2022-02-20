@@ -23,7 +23,6 @@ EXECUTE PROCEDURE trigger_set_timestamp();
 
 
 CREATE SEQUENCE type_users_id_seq OWNED BY type_users.id;
-ALTER sequence type_users_id_seq INCREMENT BY 1; 
 ALTER TABLE type_users ALTER COLUMN id SET DEFAULT nextval('type_users_id_seq'::regclass);
 
 CREATE INDEX "index_type_users_name_type_user" on type_users(name_type_user);
@@ -44,7 +43,6 @@ FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
 CREATE SEQUENCE genders_id_seq OWNED BY genders.id;
-ALTER sequence genders_id_seq INCREMENT BY 1; 
 ALTER TABLE genders ALTER COLUMN id SET DEFAULT nextval('genders_id_seq'::regclass);
 
 CREATE INDEX "index_name_on_genders" on genders(name);
@@ -84,7 +82,6 @@ FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
 CREATE SEQUENCE users_id_seq OWNED BY users.id;
-ALTER sequence users_id_seq INCREMENT BY 1; 
 ALTER TABLE users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
 
 CREATE INDEX "index_users_on_email" on users(email);
@@ -111,7 +108,6 @@ FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
 CREATE SEQUENCE authentications_id_seq OWNED BY authentications.id;
-ALTER sequence authentications_id_seq INCREMENT BY 1; 
 
 ALTER TABLE authentications ALTER COLUMN id SET DEFAULT nextval('authentications_id_seq'::regclass);
 
@@ -189,7 +185,6 @@ FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
 CREATE SEQUENCE category_foods_id_seq OWNED BY category_foods.id;
-ALTER sequence category_foods_id_seq INCREMENT BY 1; 
 ALTER TABLE category_foods ALTER COLUMN id SET DEFAULT nextval('category_foods_id_seq'::regclass);
 
 CREATE INDEX "index_category_name_on_category_foods" on category_foods(category_name);
@@ -217,7 +212,6 @@ FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
 CREATE SEQUENCE foods_id_seq OWNED BY foods.id;
-ALTER sequence foods_id_seq INCREMENT BY 1; 
 ALTER TABLE foods ALTER COLUMN id SET DEFAULT nextval('foods_id_seq'::regclass);
 
 CREATE INDEX "index_name_on_foods" on foods(name);
@@ -241,7 +235,6 @@ FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
 CREATE SEQUENCE age_ranges_id_seq OWNED BY age_ranges.id;
-ALTER sequence age_ranges_id_seq INCREMENT BY 1; 
 ALTER TABLE age_ranges ALTER COLUMN id SET DEFAULT nextval('age_ranges_id_seq'::regclass);
 
 CREATE INDEX "index_name_on_age_ranges" on age_ranges(range_name);
@@ -261,7 +254,6 @@ FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
 CREATE SEQUENCE category_food_component_id_seq OWNED BY category_food_component.id;
-ALTER sequence category_food_component_id_seq INCREMENT BY 1; 
 ALTER TABLE category_food_component ALTER COLUMN id SET DEFAULT nextval('category_food_component_id_seq'::regclass);
 
 CREATE INDEX "index_name_on_category_food_component" on category_food_component(name);
@@ -301,7 +293,6 @@ CREATE INDEX "index_id_on_category_food_component" on category_food_component(id
   EXECUTE PROCEDURE trigger_set_timestamp();
 
   CREATE SEQUENCE food_component_id_seq OWNED BY food_component.id;
-  ALTER sequence food_component_id_seq INCREMENT BY 1; 
   ALTER TABLE food_component ALTER COLUMN id SET DEFAULT nextval('food_component_id_seq'::regclass);
 
   CREATE INDEX "index_name_on_food_component" on food_component(name);
@@ -443,7 +434,6 @@ FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
 CREATE SEQUENCE family_user_market_id_seq OWNED BY family_user_market.id;
-ALTER sequence family_user_market_id_seq INCREMENT BY 1; 
 ALTER TABLE family_user_market ALTER COLUMN id SET DEFAULT nextval('family_user_market_id_seq'::regclass);
 
 CREATE TABLE polls_type(
@@ -458,7 +448,6 @@ FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
 CREATE SEQUENCE polls_type_id_seq OWNED BY polls_type.id;
-ALTER sequence polls_type_id_seq INCREMENT BY 1; 
 ALTER TABLE polls_type ALTER COLUMN id SET DEFAULT nextval('polls_type_id_seq'::regclass);
 
 insert into polls_type(id, name) values('1', 'initial_market_poll');
@@ -485,7 +474,6 @@ FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
 CREATE SEQUENCE polls_id_seq OWNED BY polls.id;
-ALTER sequence polls_id_seq INCREMENT BY 1; 
 ALTER TABLE polls ALTER COLUMN id SET DEFAULT nextval('polls_id_seq'::regclass);
 
 INSERT into  category_food_component(id, name) values('1', 'Cereal'), ('2', 'Raices'), ('3', 'Tuberculos'), ('4', 'Platanos'), ('5','Frutas'), ('6', 'Leche y Productos Lacteos'), ('7', 'Carne'), ('8','Huevos'), ('9', 'Frutos Secos y Semillas'), ('10', 'Grasas'), ('11','Azucares'), ('12', 'Leguminosas'), ('13', 'Verduras');
@@ -500,7 +488,7 @@ INSERT INTO genders(id, name) values('1', 'Male'), ('2', 'Female');
 
 
 
-INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('1','1','Pan blanco','A060','44','100','44','1 tajada delgada', '5', '2', 'Pan blanc9');
+INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('1','1','Pan blanco','A060','44','100','44','1 tajada delgada', '5', '2', 'Pan blanco');
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('1','1','Harina de trigo refinada fortificada','A040','50','100','50','4 cucharadas soperas rasas', '5', '2', 'Harina de trigo refinada fortificada' );
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('1','1','Harina de maíz blanco trillado','A034','50','100','50','2 cucharadas soperas rasas', '5', '2', 'Harina de maíz blanco trillado' );
 INSERT INTO food_component(category_id, category_food_component_id, name,code, gross_weight, useful_weight, net_weight, unit_measure_home, age_ranges_id, gender_id, skuu)  VALUES ('1','1','Arepa delgada de maíz blanco trillado','A006','112','100','112','1 unidad pequeña', '5', '2', 'Arepa delgada de maíz blanco trillado' );
@@ -3063,5 +3051,4 @@ FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
 CREATE SEQUENCE foods_market_food_component_id_seq OWNED BY foods_market_food_component.id;
-ALTER sequence foods_market_food_component_id_seq INCREMENT BY 1; 
 ALTER TABLE foods_market_food_component ALTER COLUMN id SET DEFAULT nextval('foods_market_food_component_id_seq'::regclass);

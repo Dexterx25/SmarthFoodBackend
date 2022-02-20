@@ -3,8 +3,8 @@ import { config } from '../configurations/index';
 import chalk from 'chalk';
 const client: any = redis.createClient({
   host: config.redis.host,
-  port: config.redis.port
-  //  password: config.redis.password,
+  port: config.redis.port,
+  auth_pass: process.env.REDIS_SRV_PASS,
 });
 
 // eslint-disable-next-line prettier/prettier

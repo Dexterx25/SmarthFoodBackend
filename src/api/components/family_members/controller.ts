@@ -47,7 +47,7 @@ export default function (injectedStore: any, injectedCache: any) {
         if(data.list.length){
           const query = {token}
           const family_members: any = await list(query)
-
+          console.log('this is the family members-->', family_members)
        const res =  data.list.filter(async(item) =>{  
            if(family_members.findIndex((i: any) => i.parent == 'Me') !== -1){
               if(item.parent !== 'Me'){
@@ -80,6 +80,7 @@ export default function (injectedStore: any, injectedCache: any) {
           if(query){
             console.log('vamos SI HAY QUERY_-->', query)
             members = await store.query(table, {user_id: id}, new Array());
+            console.log('membersssss->', members)
           }else{
             members = await store.list(table);
           }

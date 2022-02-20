@@ -126,12 +126,19 @@ export async function query(table: string, typequery: any, joins?: any) {
     const { theQuery }: any = await queryDatas(table, typequery, null);
     query = theQuery;
   }
+  let bodyQuery = ''
+  if(query.length){
+    bodyQuery = `SELECT ${select ? select : '*'} FROM ${table} ${joinQuery}  ${query}`
+  }else{
+    bodyQuery = `SELECT ${select ? select : '*'} FROM ${table} ${joinQuery} `
+  }
+ // console.log('bodyQury-->', bodyQuery)
   return new Promise((resolve, reject) => {
     pool.query(
-     `SELECT ${select ? select : '*'} FROM ${table} ${joinQuery}  ${query}`,
+      bodyQuery,
       (err: any, res: any) => {
         if (err) return reject(err);
-        console.log('RESPONSE QUERY DATABASE', res.rows);
+     //   console.log('RESPONSE QUERY DATABASE', res.rows);
         resolve(res.rows);
       }
     );

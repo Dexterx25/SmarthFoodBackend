@@ -46,9 +46,7 @@ async function upsert(req: Request, res: Response, next: NextFunction) {
       ConsoleResponse.success(procedence, respon);
       ServerResponse.success(req, res, respon, 201);
     })
-    .catch((err) => {
-      ServerResponse.error(req, res, err);
-    });
+    .catch(next);
 }
 
 async function get(req: Request, res: Response, next: NextFunction) {

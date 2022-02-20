@@ -67,12 +67,24 @@ export const queryDatas = (table: string, typequery: any, joins: any) => {
         theQuery
       };
       break;
-  case 'food_component':
-    console.log('consumimos mis miembros-->', query, queryValues)
-    theQuery = `WHERE ${table}.${query[0]} = '${queryValues[0]}'`;
-    return{
-      theQuery
-    }
+      case 'family_members':
+        console.log('consumimos mis miembros-->', query, queryValues)
+        theQuery = `WHERE ${table}.${query[0]} = '${queryValues[0]}'`;
+        return{
+          theQuery
+        }
+      case 'food_component':
+        console.log('entramos en foodComponent')
+        if (joins) {
+          theJoinQuery = `INNER JOIN category_foods ON category_foods.id = food_component.category_id INNER JOIN genders ON genders.id = food_component.gender_id INNER JOIN age_ranges ON age_ranges.id = food_component.age_ranges_id`;
+          selected = 'food_component.id, food_component.image, food_component.description, food_component.skuu, genders.id as gender_id, age_ranges.range_init, age_ranges.range_finish, category_foods.category_name'
+        }
+       // theQuery = `WHERE ${table}.${query[0]} '${queryValues[0]}'`
+        return {
+          theJoinQuery,
+          theQuery,
+          selected
+        };
   case 'foods_market_food_component':
     theQuery = `WHERE ${table}.${query[0]}`
   return {

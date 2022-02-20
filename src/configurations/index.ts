@@ -27,8 +27,8 @@ export const config: any = {
   },
   redis: {
     host: process.env.REDIS_SRV_HOST || '127.0.0.1',
-    port: process.env.REDIS_SRV_PORT || 6379
-    //pasword: process.env.REDIS_SRV_PORT  || 'q6mUvhd8y7539z+yMGFnQetknyTPhmQvlgaIwrxDjKojljEjNhKQY72Tpmc2PyD02VbamA7B2GcPtyDar'
+    port: process.env.REDIS_SRV_PORT || 6379,
+    pasword: process.env.REDIS_SRV_PASS 
   },
   cacheService: {
     host: process.env.MYSQL_SRV_HOST || 'localhost',

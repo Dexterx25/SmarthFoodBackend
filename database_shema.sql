@@ -332,11 +332,8 @@ CREATE TABLE foods_market(
   user_id varchar not null,
   picture varchar DEFAULT '',
   food_id varchar not null,
---  food_component_id varchar not null,
   family_member_id varchar not null,
-  times_recurral_market varchar not null,
-  date_init varchar default '',
-  date_finish varchar default '',
+ -- times_recurral_market varchar not null,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
   FOREIGN KEY (user_id)
@@ -3029,11 +3026,27 @@ INSERT INTO foods(id, name, category_id, components) values ('19', 'Tortilla con
 INSERT INTO foods(id, name, category_id, components) values ('20', 'Quesadilla con queso crema y pico gallo', '3', '["Papa común cocida", "Melón","Huevo de gallina crudo", "Aceite de oliva"]');
 INSERT INTO foods(id, name, category_id, components) values ('21', 'Sandwich cubano', '3', '["Papa común cocida", "Melón","Huevo de gallina crudo", "Aceite de oliva"]');
 
+CREATE TABLE markets(
+  id varchar PRIMARY KEY not null,
+  date_init varchar default '',
+  date_finish varchar default '',
+  times_recurral_market varchar default '',
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+CREATE TRIGGER markets
+BEFORE UPDATE ON markets
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
+CREATE SEQUENCE markets_id_seq OWNED BY markets.id;
+ALTER TABLE markets ALTER COLUMN id SET DEFAULT nextval('markets_id_seq'::regclass);
 
 CREATE TABLE foods_market_food_component(
     id varchar PRIMARY KEY not null,
     food_component_id varchar not null,
     food_market_id varchar not null,
+    markets_id varchar not null,
     user_id varchar not null,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -3042,7 +3055,9 @@ CREATE TABLE foods_market_food_component(
        FOREIGN KEY (food_component_id)
          REFERENCES food_component(id),
        FOREIGN KEY (user_id)
-         REFERENCES users(id)
+         REFERENCES users(id),
+       FOREIGN KEY(markets_id)
+         REFERENCES markets(id)
 );
 
 CREATE TRIGGER foods_market_food_component
@@ -3052,3 +3067,5 @@ EXECUTE PROCEDURE trigger_set_timestamp();
 
 CREATE SEQUENCE foods_market_food_component_id_seq OWNED BY foods_market_food_component.id;
 ALTER TABLE foods_market_food_component ALTER COLUMN id SET DEFAULT nextval('foods_market_food_component_id_seq'::regclass);
+
+

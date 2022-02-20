@@ -19,6 +19,7 @@ export interface foodsMarketFoodComponentDTO {
     food_component_id:string;
     food_market_id:string;
     user_id:string;
+    markets_id:string;
 }
 export interface food_componentsInterface {
     id:string;
@@ -39,3 +40,27 @@ export interface food_componentsInterface {
     category_name:string;
 }
 
+export interface dataMembersAgrupedInterface {
+    user_id:string;
+    family_member_id:string;
+    date_birtday:string;
+    gender:string;
+    gender_id:string;
+    times_recurral_market:string;
+    date_init:string;
+    date_finish:string;
+}
+
+export interface marketsToCreateInterface {
+    times_recurral_market:string;
+    date_init:string;
+    date_finish:string;
+}
+export interface marketsCreatedInterface {
+    id:string;
+    times_recurral_market:string;
+    date_init:string;
+    date_finish:string;
+    created_at:string;
+    updated_at:string;
+}

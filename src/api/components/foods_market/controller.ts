@@ -11,7 +11,7 @@ import errors from '../../../utils/responses/errors';
 import controllerMember from '../family_members/index'
 import controllerPoll from '../polls/index';
 import dayjs from 'dayjs';
-import { foodsMarketFoodComponentDTO, foodsMarketsCreatedDTO, food_componentsInterface } from './interfaces';
+import { dataMembersAgrupedInterface, foodsMarketFoodComponentDTO, foodsMarketsCreatedDTO, food_componentsInterface, marketsCreatedInterface, marketsToCreateInterface } from './interfaces';
 export default function (injectedStore: any, injectedCache: any) {
   let cache = injectedCache;
   let store = injectedStore;
@@ -75,7 +75,8 @@ export default function (injectedStore: any, injectedCache: any) {
          data = new Markets(datas);
        //  console.log('AQUIII-->',datas.date_init[datas.date_init.length - 1])
      //   console.log('data FamilyMembers-->', family_members);
-        const dataMembersAgruped = datas.listFamily_member_id.reduce((acc:any, item:any) =>{
+
+        const dataMembersAgruped:dataMembersAgrupedInterface[] = datas.listFamily_member_id.reduce((acc:any, item:any) =>{
             if(item){
                 acc.push({
                   user_id:datas.user_id,
@@ -97,7 +98,7 @@ export default function (injectedStore: any, injectedCache: any) {
           const {food_id, category_name, components} = datas.foodsListId[i]
             for (let k = 0; k < dataMembersAgruped.length; k++) {
             const dataMembersPrevAgruped = dataMembersAgruped[k]
-            const {gender, date_birtday, gender_id, ...rest} = dataMembersPrevAgruped
+            const {gender, date_birtday, gender_id, date_finish, times_recurral_market, date_init, ...rest} = dataMembersPrevAgruped
             const dataToSave = {
               ...rest,
               food_id,
@@ -110,18 +111,24 @@ export default function (injectedStore: any, injectedCache: any) {
                 components,
                 gender,
                 date_birtday,
-                gender_id
+                gender_id,
+                date_finish,
+                times_recurral_market,
+                date_init
               })]
             }
         }
-      
-      //  console.log('RES create Foood---', registerRespon);
-      //  console.log('RES foods To create componts foods', dataToCreateComponentFoods)
-        //store.query(table, {user_id: id}, new Array());
+        const itemTOCreateMarket:marketsToCreateInterface = {
+          times_recurral_market:datas.days_market, 
+          date_init:dayjs(datas.date_init[0].date).format('YYYY-MM-DD hh:mm'),
+          date_finish:dayjs(datas.date_init[datas.date_init.length - 1].date).format('YYYY-MM-DD hh:mm'),
+          
+        }
+        const MarketCreated:marketsCreatedInterface =  await store.upsert('markets', {data:itemTOCreateMarket, type: 'markets_register'})
+
         const dataBeForeAssingFoodComponent:foodsMarketsCreatedDTO[] = dataToCreateComponentFoods;
         const listFoodMarketComponent:food_componentsInterface[] =  await store.query('food_component', '', new Array('category_foods', 'genders', 'age_ranges'));
-        // await store.list('food_component')
-     ///   console.log('this is the listFoodMarketComponents--->', listFoodMarketComponent)
+    
         const dataAgrupedToCreateAssign:foodsMarketFoodComponentDTO[] = dataBeForeAssingFoodComponent.reduce((acc:foodsMarketFoodComponentDTO[], item:foodsMarketsCreatedDTO)=> {
 
            if(item.id){
@@ -140,12 +147,14 @@ export default function (injectedStore: any, injectedCache: any) {
                acc.push({
                  user_id:id,
                  food_market_id:item.id, 
-                 food_component_id:posibleDataComponentsToTypeFoodTime?.id!
+                 food_component_id:posibleDataComponentsToTypeFoodTime?.id!,
+                 markets_id:MarketCreated.id
                })
              }
           return acc
         },[])
         console.log('dataAgruped to asign component Food to FoodMarketId-->', dataAgrupedToCreateAssign);
+        
       await  dataAgrupedToCreateAssign.filter(async(item) => {
           await store.upsert('foods_market_food_component', {data:item, type: 'foods_market_food_component_register'})          
         })

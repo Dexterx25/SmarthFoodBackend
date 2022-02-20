@@ -55,6 +55,7 @@ export interface marketsToCreateInterface {
     times_recurral_market:string;
     date_init:string;
     date_finish:string;
+    user_id: string;
 }
 export interface marketsCreatedInterface {
     id:string;

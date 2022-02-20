@@ -21,6 +21,7 @@ export const insertTionDatas = (data: any, type: string) => {
     case 'food_market_register':
     case 'foods_market_food_component_register':
     case 'markets_register':
+    
       $keys = Object.keys($data).toString().replace('[', '').replace(']', '');
       $values = `${Object.values($data)
         .map((e) => `'${e}'`)
@@ -77,6 +78,7 @@ export const queryDatas = (table: string, typequery: any, joins: any) => {
         }
       case 'food_component':
         console.log('entramos en foodComponent')
+        
         if (joins) {
           theJoinQuery = `INNER JOIN category_foods ON category_foods.id = food_component.category_id INNER JOIN genders ON genders.id = food_component.gender_id INNER JOIN age_ranges ON age_ranges.id = food_component.age_ranges_id`;
           selected = 'food_component.id, food_component.image, food_component.description, food_component.skuu, genders.id as gender_id, age_ranges.range_init, age_ranges.range_finish, category_foods.category_name'
@@ -92,6 +94,17 @@ export const queryDatas = (table: string, typequery: any, joins: any) => {
   return {
     
   }
+  case 'markets':
+    if (joins) {
+      theJoinQuery = `INNER JOIN foods_market_food_component ON foods_market_food_component.markets_id = markets.id INNER JOIN foods_market ON foods_market_food_component.food_market_id = foods_market.id INNER JOIN food_component ON foods_market_food_component.food_component_id = food_component.id INNER JOIN`;
+      selected = 'markets.id, markets.user_id, markets.date_init, markets.date_finish, markets.created_at, markets.updated_at, foods_market_food_component.id AS foods_market_food_component_id, food_component.id AS food_component_id, food_component.unit_measure_home, food_component.net_weight, food_component.gross_weight,  food_component.useful_weight, food_component.category_food_component_id, food_component.category_id, food_component.image'
+    }
+    theQuery = `WHERE ${table}.${query[0]} = '${queryValues[0]}' and where ${table}.${query[1]} = '${queryValues[1]}' `
+    return {
+      theJoinQuery,
+      theQuery,
+      selected
+    };
     default:
       break;
   }

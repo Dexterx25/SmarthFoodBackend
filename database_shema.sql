@@ -3030,9 +3030,12 @@ CREATE TABLE markets(
   id varchar PRIMARY KEY not null,
   date_init varchar default '',
   date_finish varchar default '',
+  user_id varchar not null,
   times_recurral_market varchar default '',
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+     FOREIGN KEY (user_id)
+         REFERENCES users(id)
 );
 CREATE TRIGGER markets
 BEFORE UPDATE ON markets

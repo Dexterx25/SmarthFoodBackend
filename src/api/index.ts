@@ -26,18 +26,20 @@ import admin from './components/admin/network';
 import auth from './components/auth/network';
 import foods from './components/foods/network'
 import poll from './components/polls/network'
-import markets from './components/foods_market/network';
+import foods_markets from './components/foods_market/network';
 import members from './components/family_members/network';
 import FoodsMarketFoodsComponent from './components/family_members/network';
+import Markets from './components/markets/network';
 //app.use('/api-doc', SwaggerUI.serve, SwaggerUI.setup(swaggerDoc));
 app.use('/users', user);
 app.use('/foods', foods)
 app.use('/admins', admin);
 app.use('/authorization', auth);
 app.use('/polls', poll);
-app.use('/markets', markets);
+app.use('/foods_to_markets', foods_markets);
 app.use('/members', members)
 app.use('/foods_market_foods_component', FoodsMarketFoodsComponent);
+app.use('/markets', Markets)
 app.use(errors);
 
 app.listen(config.api.port, () => {

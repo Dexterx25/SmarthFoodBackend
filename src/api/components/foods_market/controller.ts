@@ -122,7 +122,7 @@ export default function (injectedStore: any, injectedCache: any) {
           times_recurral_market:datas.days_market, 
           date_init:dayjs(datas.date_init[0].date).format('YYYY-MM-DD hh:mm'),
           date_finish:dayjs(datas.date_init[datas.date_init.length - 1].date).format('YYYY-MM-DD hh:mm'),
-          
+          user_id:datas.user_id
         }
         const MarketCreated:marketsCreatedInterface =  await store.upsert('markets', {data:itemTOCreateMarket, type: 'markets_register'})
 
@@ -154,8 +154,8 @@ export default function (injectedStore: any, injectedCache: any) {
           return acc
         },[])
         console.log('dataAgruped to asign component Food to FoodMarketId-->', dataAgrupedToCreateAssign);
-        
-      await  dataAgrupedToCreateAssign.filter(async(item) => {
+
+      await dataAgrupedToCreateAssign.filter(async(item) => {
           await store.upsert('foods_market_food_component', {data:item, type: 'foods_market_food_component_register'})          
         })
         /// create foods Component Asosation 

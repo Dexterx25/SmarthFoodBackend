@@ -19,6 +19,7 @@ export const insertTionDatas = (data: any, type: string) => {
     case 'poll_register':
     case 'family_member_register':
     case 'food_market_register':
+    case 'foods_market_food_component_register':
       $keys = Object.keys($data).toString().replace('[', '').replace(']', '');
       $values = `${Object.values($data)
         .map((e) => `'${e}'`)

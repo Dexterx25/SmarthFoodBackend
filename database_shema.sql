@@ -3021,21 +3021,21 @@ INSERT INTO foods(id, name, category_id, components) values ('12', 'Carne de res
 INSERT INTO foods(id, name, category_id, components) values ('13', 'Filete de tilapia con ensalada', '2', '["Papa común cocida", "Melón","Huevo de gallina crudo", "Aceite de oliva"]');
 INSERT INTO foods(id, name, category_id, components) values ('14', 'Pollo salteado al wok y papa cocida', '2', '["Papa común cocida", "Melón","Huevo de gallina crudo", "Aceite de oliva"]');
 
-INSERT INTO foods(id, name, category_id, components) values ('15', 'Croqueta de espinaca', '4', '["Papa común cocida", "Melón","Huevo de gallina crudo", "Aceite de oliva"]');
-INSERT INTO foods(id, name, category_id, components) values ('16', 'Sandwich de berenjena', '4', '["Papa común cocida", "Melón","Huevo de gallina crudo", "Aceite de oliva"]');
-INSERT INTO foods(id, name, category_id, components) values ('17', 'Sandwich de atún', '4', '["Papa común cocida", "Melón","Huevo de gallina crudo", "Aceite de oliva"]');
-INSERT INTO foods(id, name, category_id, components) values ('18', 'Ensalada cesar', '4', '["Papa común cocida", "Melón","Huevo de gallina crudo", "Aceite de oliva"]');
-INSERT INTO foods(id, name, category_id, components) values ('19', 'Tortilla con queso, maiz y verdura', '4', '["Papa común cocida", "Melón","Huevo de gallina crudo", "Aceite de oliva"]');
-INSERT INTO foods(id, name, category_id, components) values ('20', 'Quesadilla con queso crema y pico gallo', '4', '["Papa común cocida", "Melón","Huevo de gallina crudo", "Aceite de oliva"]');
-INSERT INTO foods(id, name, category_id, components) values ('21', 'Sandwich cubano', '4', '["Papa común cocida", "Melón","Huevo de gallina crudo", "Aceite de oliva"]');
+INSERT INTO foods(id, name, category_id, components) values ('15', 'Croqueta de espinaca', '3', '["Papa común cocida", "Melón","Huevo de gallina crudo", "Aceite de oliva"]');
+INSERT INTO foods(id, name, category_id, components) values ('16', 'Sandwich de berenjena', '3', '["Papa común cocida", "Melón","Huevo de gallina crudo", "Aceite de oliva"]');
+INSERT INTO foods(id, name, category_id, components) values ('17', 'Sandwich de atún', '3', '["Papa común cocida", "Melón","Huevo de gallina crudo", "Aceite de oliva"]');
+INSERT INTO foods(id, name, category_id, components) values ('18', 'Ensalada cesar', '3', '["Papa común cocida", "Melón","Huevo de gallina crudo", "Aceite de oliva"]');
+INSERT INTO foods(id, name, category_id, components) values ('19', 'Tortilla con queso, maiz y verdura', '3', '["Papa común cocida", "Melón","Huevo de gallina crudo", "Aceite de oliva"]');
+INSERT INTO foods(id, name, category_id, components) values ('20', 'Quesadilla con queso crema y pico gallo', '3', '["Papa común cocida", "Melón","Huevo de gallina crudo", "Aceite de oliva"]');
+INSERT INTO foods(id, name, category_id, components) values ('21', 'Sandwich cubano', '3', '["Papa común cocida", "Melón","Huevo de gallina crudo", "Aceite de oliva"]');
 
 
 CREATE TABLE foods_market_food_component(
     id varchar PRIMARY KEY not null,
     food_component_id varchar not null,
     food_market_id varchar not null,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     user_id varchar not null,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
        FOREIGN KEY (food_market_id)
          REFERENCES foods_market(id),

@@ -126,13 +126,16 @@ export default function (injectedStore: any, injectedCache: any) {
 
            if(item.id){
             const posibleDataForComponentsToThisFood = listFoodMarketComponent.filter(k => JSON.parse(item.components).includes(k.skuu));
-            const posibleDataForComponentsToThisMemberGender = posibleDataForComponentsToThisFood.filter(y => y.gender_id == item.gender_id)
-            const dateDifference = dayjs(new Date()).diff(item.date_birtday, "years") 
-            const posibleDataForComponentsToThisRagueAges =
-             posibleDataForComponentsToThisMemberGender.filter(o => `${dateDifference}` >= o.range_init && `${dateDifference}` <= o.range_finish  )
-             console.log('posiblePosibleDate-->', posibleDataForComponentsToThisRagueAges)
+            const posibleDataForComponentsToThisMemberGender =  posibleDataForComponentsToThisFood.filter(y => y.gender_id == item.gender_id)
+            const today = dayjs(new Date()).format('YYYY-MM-DD')
+            const dateDifference = dayjs(today).diff(dayjs(item.date_birtday).format('YYYY-MM-DD'), "years") 
+            const posibleDataForComponentsToThisRagueAges = posibleDataForComponentsToThisMemberGender.filter(o => `${dateDifference}` >= o.range_init && `${dateDifference}` <= o.range_finish  )
             const posibleDataComponentsToTypeFoodTime = posibleDataForComponentsToThisRagueAges.find( e => e.category_name == item.category_name) 
-            console.log('posible data--->', posibleDataForComponentsToThisFood);
+            console.log('posible data--->', posibleDataForComponentsToThisFood.pop());
+            console.log('posible Data this Ranges-->', posibleDataForComponentsToThisRagueAges)
+            console.log('date_birtDay-->', item.date_birtday)
+            console.log('DIFERENCIA-->', dateDifference)
+            console.log('THE FIND-->', posibleDataComponentsToTypeFoodTime)
 
                acc.push({
                  user_id:id,
@@ -142,10 +145,13 @@ export default function (injectedStore: any, injectedCache: any) {
              }
           return acc
         },[])
-     //   console.log('dataAgruped to asign component Food to FoodMarketId-->', dataAgrupedToCreateAssign);
-        
+        console.log('dataAgruped to asign component Food to FoodMarketId-->', dataAgrupedToCreateAssign);
+      await  dataAgrupedToCreateAssign.filter(async(item) => {
+          await store.upsert('foods_market_food_component', {data:item, type: 'foods_market_food_component_register'})          
+        })
         /// create foods Component Asosation 
-        resolve(registerRespon );
+    
+       resolve(registerRespon );
       } catch (e) {
         await midlleHandleError(e, table, datas, resolve, reject);
       }

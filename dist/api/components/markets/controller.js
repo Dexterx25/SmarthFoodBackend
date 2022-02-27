@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -10,6 +29,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("../../../utils/actions/personas/index");
+const auth = __importStar(require("../../../authorizations/index"));
 const model_1 = require("./model");
 function default_1(injectedStore, injectedCache) {
     let cache = injectedCache;
@@ -20,7 +40,7 @@ function default_1(injectedStore, injectedCache) {
     if (!cache) {
         cache = require('../../../store/dummy');
     }
-    const table = 'food_component';
+    const table = 'markets';
     function insert({ datas, type }) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
@@ -29,10 +49,10 @@ function default_1(injectedStore, injectedCache) {
                     reject({ msg: responValidator });
                     return false;
                 }
-                const data = new model_1.FoodComponentModel(datas);
+                const data = new model_1.FoodModel(datas);
                 try {
                     const registerRespon = yield store.upsert(table, { data, type });
-                    console.log('RES create food_component---', registerRespon);
+                    console.log('RES create Foood---', registerRespon);
                     resolve(registerRespon);
                 }
                 catch (e) {
@@ -41,19 +61,29 @@ function default_1(injectedStore, injectedCache) {
             }));
         });
     }
-    function list() {
+    let enumFilter;
+    (function (enumFilter) {
+    })(enumFilter || (enumFilter = {}));
+    function list({ token, filter, market_id }) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
-                console.log('LIST CONTROLLER');
+                const { id } = yield auth.decodeHeader({ token });
+                console.log('LIST CONTROLLER markets');
                 try {
                     let foods = yield cache.list(table);
                     if (!foods) {
-                        foods = yield store.query('food_component', '', new Array('category_foods', 'genders', 'age_ranges'));
-                        !foods && reject({ msg: 'No hay ingredientes de comida' });
-                        cache.upsert(foods, table);
+                        if (filter === null || filter === void 0 ? void 0 : filter.length) {
+                            filter ?
+                                foods = yield store.query(table, { id: market_id, user_id: id, filter }, new Array('category_foods', 'food_component', 'foods_market', 'foods_market_food_component'))
+                                : foods = yield store.query(table, { id: market_id, user_id: id }, new Array('category_foods', 'food_component', 'foods_market', 'foods_market_food_component'));
+                            // const categoration = query == 'dinner' ? CateoryFoodEnum[query] : query == 'lunch' ? CateoryFoodEnum[query] : query == 'breakfast' && CateoryFoodEnum[query] 
+                            //  foods = await store.query(table, {category_id: categoration}, new Array('category_foods'));
+                        }
+                        //  !foods && reject({ msg: 'No hay platos de comida' });
+                        //  cache.upsert(foods, table, '0.2');
                     }
                     else {
-                        console.log('datos traidos de la cache');
+                        console.log('datos traidos de la cache ddddd');
                     }
                     resolve(foods);
                 }
@@ -80,9 +110,7 @@ function default_1(injectedStore, injectedCache) {
                 }
                 catch (error) {
                     console.log('this error--->', error);
-                    return reject({
-                        msg: 'maybe this food component dont exist or is not active'
-                    });
+                    return reject({ msg: 'maybe the food dont exist or is not active' });
                 }
             }));
         });
@@ -95,7 +123,7 @@ function default_1(injectedStore, injectedCache) {
                     reject({ msg: responValidator });
                     return false;
                 }
-                const data = Object.assign(new model_1.FoodComponentModel(datas), { id });
+                const data = Object.assign(new model_1.FoodModel(datas), { id });
                 try {
                     const dataRespon = yield store.upsert(table, { data, type });
                     console.log('this is the dataRespon--->', dataRespon);

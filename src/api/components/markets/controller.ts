@@ -9,6 +9,7 @@ import * as auth from '../../../authorizations/index';
 import {FoodModel} from './model';
 import errors from '../../../utils/responses/errors';
 import { CateoryFoodEnum } from './model';
+import { marketsIngredientsResponseCounter } from './interfaces';
 export default function (injectedStore: any, injectedCache: any) {
   let cache = injectedCache;
   let store = injectedStore;
@@ -53,18 +54,38 @@ interface listDataFilterProps {
       console.log('LIST CONTROLLER markets');
       try {
         let foods = await cache.list(table);
+        const foodsComponentIngrediente = await store.query(table, {id: market_id, user_id:id, filter}, new Array('category_foods', 'food_component', 'foods_market', 'foods_market_food_component'))
+let dataClenArr = [...foodsComponentIngrediente]
+const dataAgruped = []
+for (let i = 0; i < foodsComponentIngrediente.length; i++) {
+  const element = foodsComponentIngrediente[i]
+ if(dataClenArr.findIndex(e => e.food_component_id == element.food_component_id) !== -1){
+   const counterAgruped = await dataClenArr.filter(k => k.ingredient_name == element.ingredient_name).length
+   const netWeigthFormated = +element.net_weight.replace(',', '.')
+    dataAgruped.push({
+      food_component_id: element.food_component_id,
+      ingredient_name:element.ingredient_name,
+      unit_measure_home: element.unit_measure_home,
+      utility_count:element.useful_weight,
+      net_weight: counterAgruped >= 1 ? (counterAgruped * netWeigthFormated).toFixed(2) : Math.ceil(netWeigthFormated)
+    })
+ } 
+}
+var hash:any = {};
+const dataReturnAgruped = dataAgruped.filter(function(current) {
+  var exists = !hash[current.ingredient_name];
+  hash[current.ingredient_name] = true;
+  return exists;  
+});
+
         if (!foods) {
           if(filter?.length){
-            filter ?
-            await store.query(table, {id: market_id, user_id:id, filter}, new Array('category_foods', 'food_component', 'foods_market', 'foods_market_food_component'))
-            
-           : await store.query(table, {id: market_id, user_id:id}, new Array('category_foods', 'food_component', 'foods_market', 'foods_market_food_component'))
-           // const categoration = query == 'dinner' ? CateoryFoodEnum[query] : query == 'lunch' ? CateoryFoodEnum[query] : query == 'breakfast' && CateoryFoodEnum[query] 
-          //  foods = await store.query(table, {category_id: categoration}, new Array('category_foods'));
+             filter ?
+             foods = dataReturnAgruped
+            : foods = await store.query(table, {id: market_id, user_id:id}, new Array('category_foods', 'food_component', 'foods_market', 'foods_market_food_component'))
+            } else {
+              foods = await store.query(table, { user_id:id}, new Array())
             }
-            
-          !foods && reject({ msg: 'No hay platos de comida' });
-          cache.upsert(foods, table, '1');
         } else {
           console.log('datos traidos de la cache ddddd');
         }

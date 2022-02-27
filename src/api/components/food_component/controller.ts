@@ -44,7 +44,7 @@ export default function (injectedStore: any, injectedCache: any) {
       try {
         let foods = await cache.list(table);
         if (!foods) {
-          foods = await store.list(table);
+          foods =   await store.query('food_component', '', new Array('category_foods', 'genders', 'age_ranges'));
           !foods && reject({ msg: 'No hay ingredientes de comida' });
           cache.upsert(foods, table);
         } else {

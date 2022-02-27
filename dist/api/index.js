@@ -32,15 +32,19 @@ const network_5 = __importDefault(require("./components/polls/network"));
 const network_6 = __importDefault(require("./components/foods_market/network"));
 const network_7 = __importDefault(require("./components/family_members/network"));
 const network_8 = __importDefault(require("./components/family_members/network"));
+const network_9 = __importDefault(require("./components/markets/network"));
+const network_10 = __importDefault(require("./components/food_component/network"));
 //app.use('/api-doc', SwaggerUI.serve, SwaggerUI.setup(swaggerDoc));
 app.use('/users', network_1.default);
 app.use('/foods', network_4.default);
 app.use('/admins', network_2.default);
 app.use('/authorization', network_3.default);
 app.use('/polls', network_5.default);
-app.use('/markets', network_6.default);
+app.use('/foods_to_markets', network_6.default);
 app.use('/members', network_7.default);
 app.use('/foods_market_foods_component', network_8.default);
+app.use('/markets', network_9.default);
+app.use('/food-component', network_10.default);
 app.use(errors_1.default);
 app.listen(config.api.port, () => {
     // eslint-disable-next-line prettier/prettier

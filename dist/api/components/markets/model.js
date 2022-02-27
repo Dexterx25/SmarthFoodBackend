@@ -27,9 +27,9 @@ class FoodModelReturn {
 exports.FoodModelReturn = FoodModelReturn;
 var CateoryFoodEnum;
 (function (CateoryFoodEnum) {
-    CateoryFoodEnum["dinner"] = "3";
+    CateoryFoodEnum["dinner"] = "4";
     CateoryFoodEnum["breakfast"] = "1";
     CateoryFoodEnum["lunch"] = "2";
-    CateoryFoodEnum["snack"] = "4";
+    CateoryFoodEnum["snack"] = "3";
 })(CateoryFoodEnum = exports.CateoryFoodEnum || (exports.CateoryFoodEnum = {}));
 //# sourceMappingURL=model.js.map

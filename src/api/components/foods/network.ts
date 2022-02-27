@@ -15,7 +15,7 @@ import { FoodModel } from './model';
 const storage = multer.diskStorage({
   destination: 'public/photos',
   filename: function (req: Request, file: any, cb: any) {
-    cb('', Date.now() + '.' + file.originalname);
+    cb('', Date.now() + '.' + file.originalname + '.jpg');
   }
 });
 
@@ -30,6 +30,7 @@ router.put('/:id', secure('update'), upload.single('file'), update);
 router.delete('/:id', secure('delete'), remove);
 router.patch('/:id/active', secure('active'), patch);
 let procedence = 'FOOD NETWORK';
+
 
 async function upsert(req: Request, res: Response, next: NextFunction) {
   console.log('This IS The File:', req.files);
@@ -87,8 +88,9 @@ async function update(req: Request, res: Response, next: NextFunction) {
   const data = {
     id: req.params.id || req.params._id,
     datas: req.body,
+    token: req.headers.authorization,
     type: 'food_update',
-    files: req.files
+    file: req.file
   };
   console.log('this is the data update-->-->', data)
   await controller

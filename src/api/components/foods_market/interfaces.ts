@@ -39,6 +39,25 @@ export interface food_componentsInterface {
     range_finish:string;
     category_name:string;
 }
+export interface food_componentsInterfaceReduce {
+    id:string;
+    category_id:string;
+    category_food_component_id:string;
+    name:string;
+    food_market_id:string;
+    code:string;
+    gross_weight:string;
+    useful_weight:string;
+    net_weight:string;
+    unit_measure_home:string;
+    age_ranges_id:string;
+    gender_id:string;
+    skuu:string;
+    range_name:string;
+    range_init:string;
+    range_finish:string;
+    category_name:string;
+}
 
 export interface dataMembersAgrupedInterface {
     user_id:string;

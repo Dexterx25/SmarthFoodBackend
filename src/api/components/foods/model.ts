@@ -9,9 +9,9 @@ export class FoodModel {
   public category_id!: string;
   constructor(datas: any) {
     (this.name = datas.name),
-      (this.amount = datas.amount)((this.picture = datas.picture))(
-        (this.description = datas.description)
-      );
+    (this.amount = datas.amount),
+    (this.picture = datas.picture),
+    (this.description = datas.description),
     this.url = datas.url;
     this.category_id = datas.category_id;
     this.price = datas.price
@@ -42,10 +42,10 @@ export class FoodModelReturn {
 }
 
 export enum CateoryFoodEnum {
-   dinner = "4",
+   dinner = "3",
    breakfast = "1",
    lunch = "2",
-   snack = "3"
+   snack = "4"
 }
 
 export interface CategoryFoods {

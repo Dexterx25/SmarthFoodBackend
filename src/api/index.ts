@@ -30,6 +30,7 @@ import foods_markets from './components/foods_market/network';
 import members from './components/family_members/network';
 import FoodsMarketFoodsComponent from './components/family_members/network';
 import Markets from './components/markets/network';
+import foodComponent from './components/food_component/network'
 //app.use('/api-doc', SwaggerUI.serve, SwaggerUI.setup(swaggerDoc));
 app.use('/users', user);
 app.use('/foods', foods)
@@ -40,6 +41,9 @@ app.use('/foods_to_markets', foods_markets);
 app.use('/members', members)
 app.use('/foods_market_foods_component', FoodsMarketFoodsComponent);
 app.use('/markets', Markets)
+app.use('/food-component', foodComponent)
+app.use('/app', express.static('public'));
+
 app.use(errors);
 
 app.listen(config.api.port, () => {

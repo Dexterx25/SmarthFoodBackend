@@ -23,6 +23,7 @@ const insertTionDatas = (data, type) => {
         case 'family_member_register':
         case 'food_market_register':
         case 'foods_market_food_component_register':
+        case 'markets_register':
             $keys = Object.keys($data).toString().replace('[', '').replace(']', '');
             $values = `${Object.values($data)
                 .map((e) => `'${e}'`)
@@ -91,6 +92,19 @@ const queryDatas = (table, typequery, joins) => {
         case 'foods_market_food_component':
             theQuery = `WHERE ${table}.${query[0]}`;
             return {};
+        case 'markets':
+            //  console.log('THIS IS THE QUERY-->', query)
+            // console.log('this is the queryVAlues-->', queryValues)
+            if (joins) {
+                theJoinQuery = `INNER JOIN foods_market_food_component ON foods_market_food_component.markets_id = markets.id  INNER JOIN  foods_market ON foods_market_food_component.food_market_id = foods_market.id INNER JOIN food_component ON foods_market_food_component.food_component_id = food_component.id INNER JOIN category_food_component ON category_food_component.id = food_component.category_food_component_id INNER JOIN category_foods ON category_foods.id = food_component.category_id INNER JOIN foods ON foods.id = foods_market.food_id`;
+                selected = 'markets.id, markets.user_id, foods.name AS recipie_name, markets.date_init, markets.date_finish, markets.created_at, markets.updated_at, foods_market_food_component.id AS foods_market_food_component_id, food_component.id AS food_component_id, food_component.unit_measure_home, food_component.net_weight, food_component.gross_weight, food_component.name AS ingredient_name,  food_component.useful_weight, food_component.category_food_component_id, food_component.category_id, food_component.image';
+            }
+            theQuery = `WHERE ${table}.${query[0]} = '${queryValues[0]}' and  ${table}.${query[1]} = '${queryValues[1]}' `;
+            return {
+                theJoinQuery,
+                theQuery,
+                selected
+            };
         default:
             break;
     }

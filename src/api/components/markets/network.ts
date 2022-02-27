@@ -76,8 +76,9 @@ async function list(req: Request, res: Response, next: NextFunction) {
   const dataFilter = {
     token:req.headers.authorization,
     filter:req.query.filter,
-    market_id:req.params.market_id
+    market_id:req.query.market_id
   }
+  console.log('this is the params-->', req.query)
   await controller.list(dataFilter)
     .then((respon) => {
       ServerResponse.success(req, res, respon, 200);

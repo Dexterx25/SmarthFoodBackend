@@ -129,7 +129,7 @@ function default_1(injectedStore, injectedCache) {
                         const { food_id, category_name, components } = datas.foodsListId[i];
                         for (let k = 0; k < dataMembersAgruped.length; k++) {
                             const dataMembersPrevAgruped = dataMembersAgruped[k];
-                            const { gender, date_birtday, gender_id } = dataMembersPrevAgruped, rest = __rest(dataMembersPrevAgruped, ["gender", "date_birtday", "gender_id"]);
+                            const { gender, date_birtday, gender_id, date_finish, times_recurral_market, date_init } = dataMembersPrevAgruped, rest = __rest(dataMembersPrevAgruped, ["gender", "date_birtday", "gender_id", "date_finish", "times_recurral_market", "date_init"]);
                             const dataToSave = Object.assign(Object.assign({}, rest), { food_id });
                             //    console.log('this is the DATATOSAVE-->', dataToSave)
                             const respo = yield store.upsert(table, { data: dataToSave, type });
@@ -139,44 +139,55 @@ function default_1(injectedStore, injectedCache) {
                                     components,
                                     gender,
                                     date_birtday,
-                                    gender_id
+                                    gender_id,
+                                    date_init: (0, dayjs_1.default)(datas.date_init[0].date).format('YYYY-MM-DD'),
+                                    date_finish: (0, dayjs_1.default)(datas.date_init[datas.date_init.length - 1].date).format('YYYY-MM-DD'),
+                                    times_recurral_market
                                 })];
                         }
                     }
-                    //  console.log('RES create Foood---', registerRespon);
-                    //  console.log('RES foods To create componts foods', dataToCreateComponentFoods)
-                    //store.query(table, {user_id: id}, new Array());
+                    const itemTOCreateMarket = {
+                        times_recurral_market: datas.days_market,
+                        date_init: (0, dayjs_1.default)(datas.date_init[0].date).format('YYYY-MM-DD hh:mm'),
+                        date_finish: (0, dayjs_1.default)(datas.date_init[datas.date_init.length - 1].date).format('YYYY-MM-DD hh:mm'),
+                        user_id: datas.user_id
+                    };
+                    const MarketCreated = yield store.upsert('markets', { data: itemTOCreateMarket, type: 'markets_register' });
                     const dataBeForeAssingFoodComponent = dataToCreateComponentFoods;
                     const listFoodMarketComponent = yield store.query('food_component', '', new Array('category_foods', 'genders', 'age_ranges'));
-                    // await store.list('food_component')
-                    ///   console.log('this is the listFoodMarketComponents--->', listFoodMarketComponent)
-                    const dataAgrupedToCreateAssign = dataBeForeAssingFoodComponent.reduce((acc, item) => {
-                        if (item.id) {
-                            const posibleDataForComponentsToThisFood = listFoodMarketComponent.filter(k => JSON.parse(item.components).includes(k.skuu));
-                            const posibleDataForComponentsToThisMemberGender = posibleDataForComponentsToThisFood.filter(y => y.gender_id == item.gender_id);
-                            const today = (0, dayjs_1.default)(new Date()).format('YYYY-MM-DD');
-                            const dateDifference = (0, dayjs_1.default)(today).diff((0, dayjs_1.default)(item.date_birtday).format('YYYY-MM-DD'), "years");
-                            const posibleDataForComponentsToThisRagueAges = posibleDataForComponentsToThisMemberGender.filter(o => `${dateDifference}` >= o.range_init && `${dateDifference}` <= o.range_finish);
-                            const posibleDataComponentsToTypeFoodTime = posibleDataForComponentsToThisRagueAges.find(e => e.category_name == item.category_name);
-                            console.log('posible data--->', posibleDataForComponentsToThisFood.pop());
-                            console.log('posible Data this Ranges-->', posibleDataForComponentsToThisRagueAges);
-                            console.log('date_birtDay-->', item.date_birtday);
-                            console.log('DIFERENCIA-->', dateDifference);
-                            console.log('THE FIND-->', posibleDataComponentsToTypeFoodTime);
-                            acc.push({
-                                user_id: id,
-                                food_market_id: item.id,
-                                food_component_id: posibleDataComponentsToTypeFoodTime === null || posibleDataComponentsToTypeFoodTime === void 0 ? void 0 : posibleDataComponentsToTypeFoodTime.id
-                            });
-                        }
-                        return acc;
-                    }, []);
+                    let dataAgrupedToCreateAssign = [];
+                    let dataAgrupedTuAssing = [];
+                    for (let i = 0; i < dataBeForeAssingFoodComponent.length; i++) {
+                        const item = dataBeForeAssingFoodComponent[i];
+                        const posibleDataForComponentsToThisFood = yield listFoodMarketComponent.filter(k => JSON.parse(item.components).includes(k.skuu));
+                        const posibleDataForComponentsToThisMemberGender = yield posibleDataForComponentsToThisFood.filter(y => y.gender_id == item.gender_id);
+                        const today = (0, dayjs_1.default)(new Date()).format('YYYY-MM-DD');
+                        const dateDifference = (0, dayjs_1.default)(today).diff((0, dayjs_1.default)(item.date_birtday).format('YYYY-MM-DD'), "years");
+                        const posibleDataForComponentsToThisRagueAges = yield posibleDataForComponentsToThisMemberGender.filter(o => `${dateDifference}` >= o.range_init && `${dateDifference}` <= o.range_finish);
+                        const posibleDataComponentsToTypeFoodTime = yield posibleDataForComponentsToThisRagueAges.filter(e => e.category_name == item.category_name);
+                        const concatec = yield posibleDataComponentsToTypeFoodTime.reduce((acc, k) => {
+                            acc.push(Object.assign(Object.assign({}, k), { food_market_id: item.id }));
+                            return acc;
+                        }, []);
+                        dataAgrupedTuAssing = [...dataAgrupedTuAssing, ...concatec];
+                    }
+                    for (let i = 0; i < dataAgrupedTuAssing.length; i++) {
+                        const item = dataAgrupedTuAssing[i];
+                        dataAgrupedToCreateAssign.push({
+                            user_id: id,
+                            food_market_id: item.food_market_id,
+                            food_component_id: item.id,
+                            markets_id: MarketCreated.id
+                        });
+                    }
                     console.log('dataAgruped to asign component Food to FoodMarketId-->', dataAgrupedToCreateAssign);
-                    yield store.upsert('foods_market_food_component', { data: dataAgrupedToCreateAssign, type: 'foods_market_food_component_register' });
+                    yield dataAgrupedToCreateAssign.filter((item) => __awaiter(this, void 0, void 0, function* () {
+                        yield store.upsert('foods_market_food_component', { data: item, type: 'foods_market_food_component_register' });
+                    }));
                     /// create foods Component Asosation 
-                    reject();
-                    return false;
-                    //  resolve(registerRespon );
+                    // reject()
+                    //return false
+                    resolve(registerRespon);
                 }
                 catch (e) {
                     yield (0, index_1.midlleHandleError)(e, table, datas, resolve, reject);

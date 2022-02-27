@@ -84,17 +84,26 @@ export default function (injectedStore: any, injectedCache: any) {
       }
     });
   }
-
-  async function update({ datas, id, type }: any) {
+ 
+  async function update({ datas, file, token, id, type }: any) {
     return new Promise(async (resolve, reject) => {
-      const responValidator = await Validator(datas);
-      if (responValidator) {
-        reject({ msg: responValidator });
-        return false;
+    //  const responValidator = await Validator(datas);
+    //  if (responValidator) {
+    //    reject({ msg: responValidator });
+    //    return false;
+    //  }
+       const decoded = await auth.decodeHeader({token})
+       let avatarPath = ''
+       if(file){
+         console.log('PASOOOOOOOO')
+         avatarPath = `http://backend.smarthfood.fourin.co/app/photos/` + file.filename 
       }
+      datas.picture = avatarPath
+      console.log('la imagen-->', avatarPath)
       const data = Object.assign(new FoodModel(datas), { id });
 
       try {
+        console.log('data----------->', data)
         const dataRespon: FoodModel = await store.upsert(table, { data, type });
         console.log('this is the dataRespon--->', dataRespon);
         resolve(dataRespon);
